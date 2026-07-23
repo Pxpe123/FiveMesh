@@ -2,14 +2,16 @@
   "name": "fivemesh",
   "version": "0.1.0",
   "private": true,
+  "description": "Local GTA V YDR/YFT/YTD preview pipeline with a .NET decoder, Express API, and React Three.js viewer.",
   "scripts": {
-    "install:all": "npm install --prefix Server && npm install --prefix Web",
+    "install:all": "npm install --prefix apps/server && npm install --prefix apps/web",
     "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./Start-Dev.ps1",
-    "dev:server": "npm run dev --prefix Server",
-    "dev:web": "npm run dev --prefix Web",
-    "build": "dotnet build Engine/Engine.csproj && npm run build --prefix Server && npm run build --prefix Web",
-    "typecheck": "npm run typecheck --prefix Server && npm run typecheck --prefix Web",
-    "check": "npm run typecheck && npm run build",
-    "start": "npm run start --prefix Server"
+    "dev:server": "npm run dev --prefix apps/server",
+    "dev:web": "npm run dev --prefix apps/web",
+    "build": "dotnet build apps/engine/Engine.csproj && npm run build --prefix apps/server && npm run build --prefix apps/web",
+    "typecheck": "npm run typecheck --prefix apps/server && npm run typecheck --prefix apps/web",
+    "format:check": "dotnet format apps/engine/Engine.csproj --no-restore --verify-no-changes",
+    "check": "npm run typecheck && npm run build && npm run format:check",
+    "start": "npm run start --prefix apps/server"
   }
 }

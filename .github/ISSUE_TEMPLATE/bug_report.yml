@@ -1,0 +1,27 @@
+name: Bug report
+description: Report something broken in FiveMesh.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the issue and what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Asset type
+      description: Tell us whether this involved YDR, YFT, YTD, or shared texture dictionaries. Do not attach copyrighted game files.
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Paste browser/server errors or add screenshots if useful.
+      render: shell
+    validations:
+      required: false

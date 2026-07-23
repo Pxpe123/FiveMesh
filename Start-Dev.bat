@@ -22,9 +22,9 @@ if errorlevel 1 (
   exit /b 1
 )
 
-if not exist "Server\node_modules" (
+if not exist "apps\server\node_modules" (
   echo Installing server packages...
-  call npm.cmd install --prefix Server
+  call npm.cmd install --prefix apps/server
   if errorlevel 1 (
     echo Server package install failed.
     pause
@@ -32,9 +32,9 @@ if not exist "Server\node_modules" (
   )
 )
 
-if not exist "Web\node_modules" (
+if not exist "apps\web\node_modules" (
   echo Installing web packages...
-  call npm.cmd install --prefix Web
+  call npm.cmd install --prefix apps/web
   if errorlevel 1 (
     echo Web package install failed.
     pause
@@ -43,7 +43,7 @@ if not exist "Web\node_modules" (
 )
 
 echo Building FiveMesh engine...
-dotnet build Engine\Engine.csproj
+dotnet build apps\engine\Engine.csproj
 if errorlevel 1 (
   echo Engine build failed.
   pause
@@ -51,10 +51,10 @@ if errorlevel 1 (
 )
 
 echo Starting API server on http://localhost:3000
-start "FiveMesh API Server" cmd /k "cd /d ""%~dp0"" && npm.cmd run dev --prefix Server"
+start "FiveMesh API Server" cmd /k "cd /d ""%~dp0"" && npm.cmd run dev --prefix apps/server"
 
 echo Starting web viewer on http://localhost:5173
-start "FiveMesh Web Viewer" cmd /k "cd /d ""%~dp0"" && npm.cmd run dev --prefix Web"
+start "FiveMesh Web Viewer" cmd /k "cd /d ""%~dp0"" && npm.cmd run dev --prefix apps/web"
 
 echo.
 echo Ready. Open http://localhost:5173 and drop your .yft/.ydr plus optional .ytd.

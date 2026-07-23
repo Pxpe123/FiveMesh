@@ -6,7 +6,7 @@
 flowchart LR
     User["User drops YDR/YFT + optional YTD"]
 
-    subgraph Web["Web · React / TypeScript"]
+    subgraph Web["apps/web - React / TypeScript"]
         Upload["model-upload<br/>selection and request state"]
         Api["api/modelPreviewApi<br/>HTTP boundary"]
         Viewer["model-viewer<br/>Three.js scene and materials"]
@@ -14,14 +14,14 @@ flowchart LR
         Api --> Viewer
     end
 
-    subgraph Server["Server · Express / TypeScript"]
+    subgraph Server["apps/server - Express / TypeScript"]
         Route["features/models<br/>upload route and validation"]
         Service["ModelPreviewService<br/>temporary-file lifecycle"]
         Client["EngineClient<br/>process boundary"]
         Route --> Service --> Client
     end
 
-    subgraph Engine["Engine · .NET / C#"]
+    subgraph Engine["apps/engine - .NET / C#"]
         Command["Cli<br/>operation routing"]
         Preview["Application<br/>preview workflow"]
         CodeWalker["Infrastructure/CodeWalker<br/>RAGE decoding"]
@@ -31,7 +31,7 @@ flowchart LR
         CodeWalker --> Contract
     end
 
-    Schema["Contracts/model-preview.schema.json"]
+    Schema["packages/contracts/model-preview.schema.json"]
 
     User --> Upload
     Api -->|POST /api/models/preview| Route
@@ -49,26 +49,28 @@ interaction and rendering.
 
 ```text
 FiveMesh/
-├─ Contracts/                 Cross-application data schemas
-├─ Engine/
-│  ├─ Cli/                    Command parsing and future operation routing
-│  ├─ Application/            Use cases such as preview, export, or edit
-│  ├─ Contracts/              C# output models
-│  └─ Infrastructure/
-│     └─ CodeWalker/          CodeWalker-specific readers and extractors
-├─ Server/src/
-│  ├─ features/               HTTP features grouped by user capability
-│  ├─ services/               External process and service boundaries
-│  ├─ middleware/             Shared Express behavior
-│  ├─ routes/                 Small general routes
-│  └─ errors/                 Predictable HTTP errors
-├─ Web/src/
-│  ├─ api/                    Server calls
-│  ├─ components/             Shared visual components
-│  ├─ features/               Upload and viewer capabilities
-│  ├─ styles/                 CSS split by responsibility
-│  └─ types/                  Browser-side contracts
-└─ docs/                      Architecture and development guidance
+|-- apps/
+|   |-- engine/
+|   |   |-- Cli/               Command parsing and operation routing
+|   |   |-- Application/       Use cases such as preview, export, or edit
+|   |   |-- Contracts/         C# output models
+|   |   `-- Infrastructure/
+|   |       `-- CodeWalker/    CodeWalker-specific readers and extractors
+|   |-- server/src/
+|   |   |-- features/          HTTP features grouped by user capability
+|   |   |-- services/          External process and service boundaries
+|   |   |-- middleware/        Shared Express behavior
+|   |   |-- routes/            Small general routes
+|   |   `-- errors/            Predictable HTTP errors
+|   `-- web/src/
+|       |-- api/               Server calls
+|       |-- components/        Shared visual components
+|       |-- features/          Upload and viewer capabilities
+|       |-- styles/            CSS split by responsibility
+|       `-- types/             Browser-side contracts
+|-- packages/
+|   `-- contracts/             Cross-application data schemas
+`-- docs/                      Architecture and development guidance
 ```
 
 ## Where future changes go
@@ -87,16 +89,16 @@ FiveMesh/
 ```mermaid
 flowchart TB
     Need["New capability"]
-    EngineOp["1 · Engine command + application use case"]
-    SchemaChange["2 · Versioned request/response contract"]
-    ServerFeature["3 · Server feature route + lifecycle service"]
-    WebFeature["4 · Web feature + API function"]
-    Checks["5 · Typecheck, build, and sample-file verification"]
+    EngineOp["1 - Engine command + application use case"]
+    SchemaChange["2 - Versioned request/response contract"]
+    ServerFeature["3 - Server feature route + lifecycle service"]
+    WebFeature["4 - Web feature + API function"]
+    Checks["5 - Typecheck, build, and sample-file verification"]
 
     Need --> EngineOp --> SchemaChange --> ServerFeature --> WebFeature --> Checks
 ```
 
-Keep CodeWalker types inside `Engine/Infrastructure/CodeWalker`. The Server and
-Web should only know the neutral contracts. This prevents a future editor,
-exporter, thumbnail generator, or batch converter from becoming tied to the
-current preview screen.
+Keep CodeWalker types inside `apps/engine/Infrastructure/CodeWalker`. The
+Server and Web should only know the neutral contracts. This keeps future
+editors, exporters, thumbnail generators, and batch converters independent from
+the current preview screen.

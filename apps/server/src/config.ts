@@ -10,14 +10,14 @@ export type AppConfig = {
 };
 
 const serverDirectory = fileURLToPath(new URL("../", import.meta.url));
-const repositoryRoot = path.resolve(serverDirectory, "..");
+const repositoryRoot = path.resolve(serverDirectory, "../..");
 
 export const loadConfig = (): AppConfig => ({
   port: readPositiveNumber(process.env.PORT, 3000),
   webOrigin: process.env.WEB_ORIGIN ?? "http://localhost:5173",
   engineProjectPath:
     process.env.ENGINE_PROJECT_PATH ??
-    path.join(repositoryRoot, "Engine", "Engine.csproj"),
+    path.join(repositoryRoot, "apps", "engine", "Engine.csproj"),
   engineTimeoutMs: readPositiveNumber(process.env.ENGINE_TIMEOUT_MS, 120_000),
   maxUploadBytes: readPositiveNumber(
     process.env.MAX_UPLOAD_BYTES,

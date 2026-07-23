@@ -4,10 +4,12 @@ dist/
 .env.local
 *.log
 *.tsbuildinfo
+coverage/
 
 # IDE and OS files
 .idea/
 .vscode/
+.vs/
 .DS_Store
 *.suo
 *.user
@@ -15,3 +17,8 @@ dist/
 # .NET build output
 **/bin/
 **/obj/
+
+# Local GTA V assets should stay out of the public repo
+*.ydr
+*.yft
+*.ytd
