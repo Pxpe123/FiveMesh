@@ -5,5 +5,5 @@ internal abstract record EngineCommand;
 internal sealed record PreviewCommand(
     string ModelPath,
     string OutputPath,
-    string? TexturePath
+    IReadOnlyList<string> TexturePaths
 ) : EngineCommand;

@@ -1,11 +1,11 @@
 export type SelectedModelFiles = {
   model: File | null;
-  textures: File | null;
+  textures: File[];
 };
 
 export const emptyModelFiles: SelectedModelFiles = {
   model: null,
-  textures: null,
+  textures: [],
 };
 
 export function mergeSelectedFiles(
@@ -17,10 +17,25 @@ export function mergeSelectedFiles(
     model:
       selected.find((file) => /\.(ydr|yft)$/i.test(file.name)) ??
       current.model,
-    textures:
-      selected.find((file) => /\.ytd$/i.test(file.name)) ??
-      current.textures,
+    textures: mergeTextureFiles(current.textures, selected),
   };
+}
+
+function mergeTextureFiles(current: File[], incoming: File[]) {
+  const textureFiles = incoming.filter((file) => /\.ytd$/i.test(file.name));
+  if (textureFiles.length === 0) {
+    return current;
+  }
+
+  const byName = new Map<string, File>();
+  for (const file of current) {
+    byName.set(file.name.toLowerCase(), file);
+  }
+  for (const file of textureFiles) {
+    byName.set(file.name.toLowerCase(), file);
+  }
+
+  return Array.from(byName.values());
 }
 
 export function formatFileSize(bytes: number) {

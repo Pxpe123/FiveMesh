@@ -7,6 +7,12 @@ export type FiveMeshApp = {
   description: string;
 };
 
+export type PlannedFeature = {
+  name: string;
+  stage: string;
+  description: string;
+};
+
 export const fiveMeshApps: FiveMeshApp[] = [
   {
     id: "viewer",
@@ -17,10 +23,31 @@ export const fiveMeshApps: FiveMeshApp[] = [
   },
   {
     id: "home",
-    name: "Asset Hub",
+    name: "YMAP Viewer",
     status: "planned",
     description:
-      "A future workspace for organizing examples, saved projects, and tool entry points.",
+      "Work is underway for viewing YMAP placement data inside the FiveMesh viewer",
+  },
+];
+
+export const plannedFeatures: PlannedFeature[] = [
+  {
+    name: "YMAP Viewer",
+    stage: "in progress",
+    description:
+      "Work is underway for viewing YMAP placement data inside the FiveMesh viewer.",
+  },
+  {
+    name: "YTYP + MLO Support",
+    stage: "planned",
+    description:
+      "YTYP parsing for archetypes and MLO-related data is planned so interiors and related assets can be explored together.",
+  },
+  {
+    name: "Map Viewer",
+    stage: "possible future app",
+    description:
+      "A full map viewer is on the table if the data pipeline and performance hold up well enough.",
   },
 ];
 

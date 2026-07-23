@@ -23,6 +23,11 @@ The hosted app starts with a small home screen that explains what FiveMesh is
 and links into the available tools. The current tool is the Model Viewer. More
 apps can be added inside the same shell as the project grows.
 
+The current plan is to extend the viewer with YMAP and YTYP support so MLO and
+map-related data can be explored in the same environment. A broader standalone
+map viewer is also on the table if the format support and rendering pipeline
+make that practical.
+
 The home screen also supports curated examples for visitors who do not know
 FiveM tooling or do not have model files ready. Example assets live in
 `examples/assets`.

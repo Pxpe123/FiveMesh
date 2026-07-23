@@ -10,8 +10,8 @@ export async function requestModelPreview(
 
   const body = new FormData();
   body.append("model", files.model);
-  if (files.textures) {
-    body.append("textures", files.textures);
+  for (const texture of files.textures) {
+    body.append("textures", texture);
   }
 
   const response = await fetch("/api/models/preview", {

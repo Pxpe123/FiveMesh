@@ -29,7 +29,7 @@ internal sealed class PreviewModelService
 
         var textures = await TextureExtractor.ExtractAsync(
             asset.EmbeddedTextures,
-            command.TexturePath,
+            command.TexturePaths,
             cancellationToken
         );
 

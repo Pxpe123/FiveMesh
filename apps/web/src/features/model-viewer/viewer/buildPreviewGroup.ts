@@ -3,6 +3,7 @@ import * as THREE from "three";
 import type { PreviewModel } from "../../../types/previewModel";
 import { createDdsTexture } from "./ddsTexture";
 import { createMaterial, usesTransparency } from "./materials";
+import type { VehiclePaintSettings } from "./vehiclePaint";
 
 export type PreviewGroup = {
   group: THREE.Group;
@@ -14,6 +15,7 @@ export type PreviewGroup = {
 export function buildPreviewGroup(
   model: PreviewModel,
   wireframe: boolean,
+  paint: VehiclePaintSettings,
 ): PreviewGroup {
   const group = new THREE.Group();
   const geometries: THREE.BufferGeometry[] = [];
@@ -24,17 +26,17 @@ export function buildPreviewGroup(
   for (const item of model.textures) {
     const texture = createDdsTexture(item.dds);
     if (texture) {
-      textureMap.set(normalizeTextureName(item.name), texture);
+      for (const alias of buildTextureAliases(item.name)) {
+        textureMap.set(alias, texture);
+      }
       textures.push(texture);
     }
   }
 
   for (const meshData of model.meshes) {
     const geometry = createGeometry(meshData);
-    const texture = meshData.texture
-      ? textureMap.get(normalizeTextureName(meshData.texture))
-      : undefined;
-    const material = createMaterial(meshData, texture, wireframe);
+    const texture = resolveTexture(meshData.texture, textureMap, model.textures);
+    const material = createMaterial(meshData, texture, wireframe, paint);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.name = meshData.name;
@@ -73,5 +75,68 @@ function createGeometry(mesh: PreviewModel["meshes"][number]) {
 }
 
 function normalizeTextureName(name: string) {
-  return name.toLowerCase().replace(/\.dds$/i, "");
+  return name
+    .toLowerCase()
+    .replace(/\\/g, "/")
+    .replace(/^.*\//, "")
+    .replace(/\.dds$/i, "")
+    .replace(/[+]/g, "_");
+}
+
+function buildTextureAliases(name: string) {
+  const normalized = normalizeTextureName(name);
+  const aliases = new Set<string>([normalized]);
+
+  aliases.add(normalized.replace(/_(hi|lod|s|w)$/i, ""));
+  aliases.add(normalized.replace(/_(diffuse|color|albedo)$/i, ""));
+  aliases.add(normalized.replace(/^vehshare_/, ""));
+  aliases.add(normalized.replace(/^vehicle_generic_/, ""));
+
+  return aliases;
+}
+
+function resolveTexture(
+  textureName: string | null,
+  textureMap: Map<string, THREE.Texture>,
+  textures: PreviewModel["textures"],
+) {
+  if (!textureName) {
+    return undefined;
+  }
+
+  for (const alias of buildTextureAliases(textureName)) {
+    const directMatch = textureMap.get(alias);
+    if (directMatch) {
+      return directMatch;
+    }
+  }
+
+  const normalized = normalizeTextureName(textureName);
+  const similar = textures.find((item) => {
+    const aliases = buildTextureAliases(item.name);
+    if (aliases.has(normalized)) {
+      return true;
+    }
+
+    for (const alias of aliases) {
+      if (
+        alias.includes(normalized) ||
+        normalized.includes(alias) ||
+        stripVariantSuffix(alias) === stripVariantSuffix(normalized)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  });
+  if (similar) {
+    return textureMap.get(normalizeTextureName(similar.name));
+  }
+
+  return undefined;
+}
+
+function stripVariantSuffix(value: string) {
+  return value.replace(/_(hi|lod|s|w|n|spec|normal|detail|diffuse|color|albedo)$/i, "");
 }

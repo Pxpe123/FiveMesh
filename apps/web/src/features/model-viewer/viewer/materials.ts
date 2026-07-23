@@ -1,6 +1,11 @@
 import * as THREE from "three";
 
 import type { PreviewMesh } from "../../../types/previewModel";
+import {
+  classifyPaintChannel,
+  getMaterialColor,
+  type VehiclePaintSettings,
+} from "./vehiclePaint";
 
 const transparencyHints = [
   "glass",
@@ -18,10 +23,12 @@ export function createMaterial(
   mesh: PreviewMesh,
   texture: THREE.Texture | undefined,
   wireframe: boolean,
+  paint: VehiclePaintSettings,
 ) {
   const transparent = usesTransparency(mesh);
+  const paintChannel = transparent ? "none" : classifyPaintChannel(mesh);
   return new THREE.MeshStandardMaterial({
-    color: texture ? "#ffffff" : "#a7b0ba",
+    color: getMaterialColor(paintChannel, paint, Boolean(texture)),
     map: texture,
     metalness: transparent ? 0.05 : 0.25,
     roughness: transparent ? 0.08 : 0.55,

@@ -11,6 +11,7 @@ import { HomeScreen } from "./features/home/HomeScreen";
 import { ModelUploadPanel } from "./features/model-upload/ModelUploadPanel";
 import { useModelPreview } from "./features/model-upload/useModelPreview";
 import { ViewerPanel } from "./features/model-viewer/ViewerPanel";
+import { getDefaultVehiclePaint } from "./features/model-viewer/viewer/vehiclePaint";
 
 export default function App() {
   const modelPreview = useModelPreview();
@@ -21,6 +22,11 @@ export default function App() {
   const [exampleError, setExampleError] = useState("");
   const [wireframe, setWireframe] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
+  const [vehiclePaint, setVehiclePaint] = useState(getDefaultVehiclePaint);
+
+  useEffect(() => {
+    setVehiclePaint(getDefaultVehiclePaint());
+  }, [modelPreview.preview?.name]);
 
   useEffect(() => {
     let mounted = true;
@@ -77,9 +83,11 @@ export default function App() {
       ) : (
         <section className="workspace">
           <ModelUploadPanel
+            examples={examples}
             files={modelPreview.files}
             loading={modelPreview.loading || examplePreviewLoading}
             error={modelPreview.error || exampleError}
+            onLoadExample={loadExample}
             onFilesSelected={modelPreview.selectFiles}
             onLoad={modelPreview.load}
           />
@@ -88,6 +96,8 @@ export default function App() {
             loading={modelPreview.loading || examplePreviewLoading}
             wireframe={wireframe}
             autoRotate={autoRotate}
+            vehiclePaint={vehiclePaint}
+            onVehiclePaintChange={setVehiclePaint}
             onWireframeChange={setWireframe}
             onAutoRotateChange={setAutoRotate}
           />

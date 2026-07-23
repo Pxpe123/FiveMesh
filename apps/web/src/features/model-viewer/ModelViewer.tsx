@@ -5,17 +5,20 @@ import {
   createViewerSession,
   type ViewerSession,
 } from "./viewer/createViewerSession";
+import type { VehiclePaintSettings } from "./viewer/vehiclePaint";
 
 type ModelViewerProps = {
   model: PreviewModel | null;
   wireframe: boolean;
   autoRotate: boolean;
+  vehiclePaint: VehiclePaintSettings;
 };
 
 export function ModelViewer({
   model,
   wireframe,
   autoRotate,
+  vehiclePaint,
 }: ModelViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const sessionRef = useRef<ViewerSession | null>(null);
@@ -45,6 +48,10 @@ export function ModelViewer({
   useEffect(() => {
     sessionRef.current?.setAutoRotate(autoRotate);
   }, [autoRotate]);
+
+  useEffect(() => {
+    sessionRef.current?.setVehiclePaint(vehiclePaint);
+  }, [vehiclePaint]);
 
   return <div ref={hostRef} className="viewer-canvas" />;
 }

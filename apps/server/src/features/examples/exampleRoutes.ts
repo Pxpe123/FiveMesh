@@ -13,10 +13,12 @@ export const createExampleRouter = (config: AppConfig) => {
   );
 
   router.get("/", async (_request, response) => {
+    response.setHeader("Cache-Control", "no-store");
     response.json(await catalog.list());
   });
 
   router.get("/:id/preview", async (request, response) => {
+    response.setHeader("Cache-Control", "no-store");
     const upload = await catalog.readUpload(request.params.id);
     const preview = await previewService.createPreview(upload);
     response.type("application/json").send(preview);

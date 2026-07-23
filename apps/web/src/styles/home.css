@@ -28,18 +28,22 @@
 
 .section-heading h2 {
   margin: 0;
-  font: 600 22px "Space Grotesk", sans-serif;
+  font:
+    600 22px "Space Grotesk",
+    sans-serif;
 }
 
 .app-grid,
-.examples-panel {
+.examples-panel,
+.coming-soon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 13px;
 }
 
 .app-card,
-.example-card {
+.example-card,
+.coming-soon-card {
   display: grid;
   min-height: 150px;
   gap: 9px;
@@ -50,8 +54,13 @@
   background: #10161d;
   text-align: left;
   cursor: pointer;
+  transition: border 0.2s ease-in-out;
 }
 
+.example-card:hover,
+.app-card:hover {
+  border: 1px solid #61e5a7;
+}
 .app-card:disabled,
 .example-card:disabled {
   cursor: not-allowed;
@@ -59,7 +68,8 @@
 }
 
 .app-card span,
-.example-card span {
+.example-card span,
+.coming-soon-card span {
   width: fit-content;
   padding: 4px 7px;
   border-radius: 5px;
@@ -71,12 +81,16 @@
 }
 
 .app-card strong,
-.example-card strong {
-  font: 600 17px "Space Grotesk", sans-serif;
+.example-card strong,
+.coming-soon-card strong {
+  font:
+    600 17px "Space Grotesk",
+    sans-serif;
 }
 
 .app-card small,
 .example-card small,
+.coming-soon-card small,
 .muted-text {
   color: #84909d;
   font-size: 13px;
@@ -86,6 +100,26 @@
 .example-card code {
   color: #65717d;
   font-size: 11px;
+}
+
+.coming-soon-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.coming-soon-intro {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+  border: 1px solid #222b34;
+  border-radius: 8px;
+  background: #10161d;
+}
+
+.coming-soon-intro strong {
+  font:
+    600 18px "Space Grotesk",
+    sans-serif;
 }
 
 @media (max-width: 800px) {

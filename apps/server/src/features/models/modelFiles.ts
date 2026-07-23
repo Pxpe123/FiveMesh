@@ -4,7 +4,7 @@ import { HttpError } from "../../errors/HttpError.js";
 
 export type ModelUpload = {
   model: ModelFile;
-  textures?: ModelFile;
+  textures: ModelFile[];
 };
 
 export type ModelFile = {
@@ -21,14 +21,14 @@ export function readModelUpload(
     | Record<string, Express.Multer.File[]>
     | undefined;
   const model = fields?.model?.[0];
-  const textures = fields?.textures?.[0];
+  const textures = fields?.textures ?? [];
 
   if (!model || !supportedModelExtensions.has(extensionOf(model))) {
     throw new HttpError(400, "Choose a .ydr or .yft model file.");
   }
 
-  if (textures && extensionOf(textures) !== ".ytd") {
-    throw new HttpError(400, "The texture file must be a .ytd.");
+  if (textures.some((texture) => extensionOf(texture) !== ".ytd")) {
+    throw new HttpError(400, "Texture files must be .ytd dictionaries.");
   }
 
   return { model, textures };

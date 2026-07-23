@@ -12,7 +12,7 @@ export class EngineClient {
   async createPreview(
     modelPath: string,
     outputPath: string,
-    texturePath?: string,
+    texturePaths: string[] = [],
   ) {
     const engineArguments = [
       "run",
@@ -25,9 +25,7 @@ export class EngineClient {
       outputPath,
     ];
 
-    if (texturePath) {
-      engineArguments.push(texturePath);
-    }
+    engineArguments.push(...texturePaths);
 
     await execFileAsync("dotnet", engineArguments, {
       timeout: this.timeoutMs,

@@ -10,7 +10,7 @@ export const createModelRouter = (config: AppConfig) => {
   const router = Router();
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: config.maxUploadBytes, files: 2 },
+    limits: { fileSize: config.maxUploadBytes, files: 6 },
   });
   const previewService = new ModelPreviewService(
     new EngineClient(config.engineProjectPath, config.engineTimeoutMs),
@@ -20,7 +20,7 @@ export const createModelRouter = (config: AppConfig) => {
     "/preview",
     upload.fields([
       { name: "model", maxCount: 1 },
-      { name: "textures", maxCount: 1 },
+      { name: "textures", maxCount: 5 },
     ]),
     async (request, response) => {
       const files = readModelUpload(request.files);

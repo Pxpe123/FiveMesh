@@ -3,7 +3,7 @@ namespace FiveMesh.Engine.Cli;
 internal static class EngineCommandParser
 {
     internal const string Usage =
-        "Usage: Engine preview <model.ydr|model.yft> <output.json> [textures.ytd]";
+        "Usage: Engine preview <model.ydr|model.yft> <output.json> [textures1.ytd] [textures2.ytd] ...";
 
     internal static bool TryParse(
         string[] arguments,
@@ -27,16 +27,16 @@ internal static class EngineCommandParser
             return false;
         }
 
-        if (arguments.Length is < 3 or > 4)
+        if (arguments.Length < 3)
         {
-            error = "Preview expects a model, an output file, and an optional texture dictionary.";
+            error = "Preview expects a model, an output file, and any optional texture dictionaries.";
             return false;
         }
 
         command = new PreviewCommand(
             arguments[1],
             arguments[2],
-            arguments.Length == 4 ? arguments[3] : null
+            arguments.Skip(3).ToArray()
         );
         return true;
     }

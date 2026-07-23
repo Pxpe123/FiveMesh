@@ -86,6 +86,64 @@
   backdrop-filter: blur(12px);
 }
 
+.vehicle-paint-panel {
+  position: absolute;
+  top: 74px;
+  right: 20px;
+  display: grid;
+  gap: 10px;
+  width: 188px;
+  padding: 12px;
+  border: 1px solid #252e37;
+  border-radius: 10px;
+  background: #0d1218dd;
+  backdrop-filter: blur(12px);
+}
+
+.vehicle-paint-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vehicle-paint-heading strong {
+  font-size: 12px;
+}
+
+.vehicle-paint-heading button {
+  border: 0;
+  color: #7e8b97;
+  background: transparent;
+  font-size: 10px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.paint-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.paint-field span {
+  color: #8b96a1;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.paint-field input {
+  width: 40px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #2a3540;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
 .viewer-toolbar button {
   padding: 7px 10px;
   border: 0;

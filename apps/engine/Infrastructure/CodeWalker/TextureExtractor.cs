@@ -8,7 +8,7 @@ internal static class TextureExtractor
 {
     internal static async Task<IReadOnlyList<PreviewTexture>> ExtractAsync(
         TextureDictionary? embeddedTextures,
-        string? texturePath,
+        IReadOnlyList<string>? texturePaths,
         CancellationToken cancellationToken = default
     )
     {
@@ -17,8 +17,13 @@ internal static class TextureExtractor
         );
         AddDictionary(embeddedTextures, textures);
 
-        if (!string.IsNullOrWhiteSpace(texturePath))
+        foreach (var texturePath in texturePaths ?? [])
         {
+            if (string.IsNullOrWhiteSpace(texturePath))
+            {
+                continue;
+            }
+
             if (!File.Exists(texturePath))
             {
                 throw new FileNotFoundException(

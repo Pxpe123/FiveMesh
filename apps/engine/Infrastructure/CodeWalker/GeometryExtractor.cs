@@ -5,6 +5,18 @@ namespace FiveMesh.Engine.Infrastructure.CodeWalker;
 
 internal static class GeometryExtractor
 {
+    private static readonly VertexSemantics[] UvSemantics =
+    [
+        VertexSemantics.TexCoord0,
+        VertexSemantics.TexCoord1,
+        VertexSemantics.TexCoord2,
+        VertexSemantics.TexCoord3,
+        VertexSemantics.TexCoord4,
+        VertexSemantics.TexCoord5,
+        VertexSemantics.TexCoord6,
+        VertexSemantics.TexCoord7
+    ];
+
     internal static IReadOnlyList<PreviewMesh> Extract(DrawableModel[] models)
     {
         var meshes = new List<PreviewMesh>();
@@ -49,11 +61,7 @@ internal static class GeometryExtractor
                             declaration,
                             VertexSemantics.Normal
                         ),
-                        Uvs: VertexAttributeReader.ReadVector2(
-                            vertexData,
-                            declaration,
-                            VertexSemantics.TexCoord0
-                        ),
+                        Uvs: ReadBestUvs(vertexData, declaration, positions.Length / 3),
                         Indices: indices.Select(value => (int)value).ToArray(),
                         Texture: ShaderTextureResolver.FindDiffuseTexture(shader),
                         Shader: shader?.FileName.ToString() ?? "default",
@@ -64,5 +72,56 @@ internal static class GeometryExtractor
         }
 
         return meshes;
+    }
+
+    private static float[] ReadBestUvs(
+        VertexData vertexData,
+        VertexDeclaration declaration,
+        int vertexCount
+    )
+    {
+        float[]? fallback = null;
+
+        foreach (var semantic in UvSemantics)
+        {
+            var candidate = VertexAttributeReader.ReadVector2(vertexData, declaration, semantic);
+            if (candidate.Length != vertexCount * 2)
+            {
+                continue;
+            }
+
+            fallback ??= candidate;
+            if (HasUsefulUvVariation(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        return fallback ?? [];
+    }
+
+    private static bool HasUsefulUvVariation(float[] values)
+    {
+        if (values.Length < 4)
+        {
+            return false;
+        }
+
+        const float epsilon = 0.0001f;
+        var firstU = values[0];
+        var firstV = values[1];
+
+        for (var index = 2; index < values.Length; index += 2)
+        {
+            if (
+                Math.Abs(values[index] - firstU) > epsilon
+                || Math.Abs(values[index + 1] - firstV) > epsilon
+            )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

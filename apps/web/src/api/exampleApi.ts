@@ -6,11 +6,13 @@ export type ExampleModel = {
   category: string;
   type: "YDR" | "YFT";
   modelFile: string;
-  textureFile?: string;
+  textureFiles: string[];
 };
 
 export async function requestExamples(): Promise<ExampleModel[]> {
-  const response = await fetch("/api/examples");
+  const response = await fetch(`/api/examples?ts=${Date.now()}`, {
+    cache: "no-store",
+  });
   if (!response.ok) {
     return [];
   }
@@ -20,7 +22,12 @@ export async function requestExamples(): Promise<ExampleModel[]> {
 }
 
 export async function requestExamplePreview(id: string): Promise<PreviewModel> {
-  const response = await fetch(`/api/examples/${encodeURIComponent(id)}/preview`);
+  const response = await fetch(
+    `/api/examples/${encodeURIComponent(id)}/preview?ts=${Date.now()}`,
+    {
+      cache: "no-store",
+    },
+  );
   const payload = await response.json();
 
   if (!response.ok) {
@@ -46,7 +53,9 @@ function isExampleModel(value: unknown): value is ExampleModel {
       "type" in value &&
       (value.type === "YDR" || value.type === "YFT") &&
       "modelFile" in value &&
-      typeof value.modelFile === "string",
+      typeof value.modelFile === "string" &&
+      "textureFiles" in value &&
+      Array.isArray(value.textureFiles),
   );
 }
 

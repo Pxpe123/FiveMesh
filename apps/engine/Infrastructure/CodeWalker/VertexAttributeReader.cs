@@ -40,7 +40,8 @@ internal static class VertexAttributeReader
     internal static float[] ReadVector2(
         VertexData data,
         VertexDeclaration declaration,
-        VertexSemantics semantic
+        VertexSemantics semantic,
+        bool flipV = false
     )
     {
         var component = (int)semantic;
@@ -62,7 +63,7 @@ internal static class VertexAttributeReader
         {
             var value = ReadVector2(data.VertexBytes, data.VertexStride, index, offset, type);
             values[index * 2] = value.X;
-            values[index * 2 + 1] = 1 - value.Y; // RAGE and WebGL use opposite V origins.
+            values[index * 2 + 1] = flipV ? 1 - value.Y : value.Y;
         }
 
         return values;

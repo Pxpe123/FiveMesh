@@ -12,7 +12,7 @@ export type ExampleSummary = {
   category: string;
   type: ExampleType;
   modelFile: string;
-  textureFile?: string;
+  textureFiles: string[];
 };
 
 type ExampleEntry = ExampleSummary & {
@@ -41,14 +41,12 @@ export class ExampleCatalog {
         originalname: example.modelFile,
         buffer: await readFile(path.join(example.folderPath, example.modelFile)),
       },
-      textures: example.textureFile
-        ? {
-            originalname: example.textureFile,
-            buffer: await readFile(
-              path.join(example.folderPath, example.textureFile),
-            ),
-          }
-        : undefined,
+      textures: await Promise.all(
+        example.textureFiles.map(async (textureFile) => ({
+          originalname: textureFile,
+          buffer: await readFile(path.join(example.folderPath, textureFile)),
+        })),
+      ),
     };
   }
 
@@ -95,7 +93,7 @@ export class ExampleCatalog {
       return null;
     }
 
-    const textureFile = files.find(
+    const textureFiles = files.filter(
       (file) => path.extname(file).toLowerCase() === ".ytd",
     );
 
@@ -105,7 +103,7 @@ export class ExampleCatalog {
       category: formatExampleName(category),
       type: path.extname(modelFile).slice(1).toUpperCase() as ExampleType,
       modelFile,
-      textureFile,
+      textureFiles,
       folderPath,
     };
   }

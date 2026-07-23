@@ -1,5 +1,9 @@
 import type { ExampleModel } from "../../api/exampleApi";
-import { fiveMeshApps, type AppPage } from "../../constants/pages";
+import {
+  fiveMeshApps,
+  plannedFeatures,
+  type AppPage,
+} from "../../constants/pages";
 
 type HomeScreenProps = {
   examples: ExampleModel[];
@@ -88,6 +92,33 @@ export function HomeScreen({
               <code>{example.modelFile}</code>
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="home-section">
+        <div className="section-heading">
+          <p className="section-label">Coming soon</p>
+          <h2>Where FiveMesh is heading next</h2>
+        </div>
+        <div className="coming-soon-panel">
+          <div className="coming-soon-intro">
+            <strong>Viewer expansion</strong>
+            <p className="muted-text">
+              The next step is broadening the viewer beyond drawables and
+              vehicle fragments so map and MLO workflows can live in the same
+              toolset.
+            </p>
+          </div>
+
+          <div className="coming-soon-grid">
+            {plannedFeatures.map((feature) => (
+              <article key={feature.name} className="coming-soon-card">
+                <span>{feature.stage}</span>
+                <strong>{feature.name}</strong>
+                <small>{feature.description}</small>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>

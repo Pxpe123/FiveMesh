@@ -12,18 +12,20 @@ export class ModelPreviewService {
   async createPreview(upload: ModelUpload) {
     const workDirectory = await mkdtemp(path.join(tmpdir(), "fivemesh-"));
     const modelPath = path.join(workDirectory, `model${extensionOf(upload.model)}`);
-    const texturePath = upload.textures
-      ? path.join(workDirectory, "textures.ytd")
-      : undefined;
+    const texturePaths = upload.textures.map((texture, index) =>
+      path.join(workDirectory, `textures-${index + 1}.ytd`),
+    );
     const outputPath = path.join(workDirectory, "preview.json");
 
     try {
       await writeFile(modelPath, upload.model.buffer);
-      if (upload.textures && texturePath) {
-        await writeFile(texturePath, upload.textures.buffer);
-      }
+      await Promise.all(
+        upload.textures.map((texture, index) =>
+          writeFile(texturePaths[index], texture.buffer),
+        ),
+      );
 
-      await this.engine.createPreview(modelPath, outputPath, texturePath);
+      await this.engine.createPreview(modelPath, outputPath, texturePaths);
       return await readFile(outputPath);
     } catch (error) {
       throw new HttpError(422, engineErrorMessage(error));

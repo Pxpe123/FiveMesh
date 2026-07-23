@@ -3,6 +3,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import type { PreviewModel } from "../../../types/previewModel";
 import { buildPreviewGroup } from "./buildPreviewGroup";
+import {
+  getDefaultVehiclePaint,
+  type VehiclePaintSettings,
+} from "./vehiclePaint";
 
 type ViewerOptions = {
   wireframe: boolean;
@@ -12,6 +16,7 @@ type ViewerOptions = {
 export type ViewerSession = {
   setWireframe: (enabled: boolean) => void;
   setAutoRotate: (enabled: boolean) => void;
+  setVehiclePaint: (paint: VehiclePaintSettings) => void;
   dispose: () => void;
 };
 
@@ -38,7 +43,7 @@ export function createViewerSession(
   controls.autoRotateSpeed = 1.25;
 
   const resources = model
-    ? buildPreviewGroup(model, options.wireframe)
+    ? buildPreviewGroup(model, options.wireframe, getDefaultVehiclePaint())
     : {
         group: new THREE.Group(),
         geometries: [],
@@ -81,6 +86,23 @@ export function createViewerSession(
     },
     setAutoRotate(enabled) {
       controls.autoRotate = enabled;
+    },
+    setVehiclePaint(paint) {
+      if (!model) {
+        return;
+      }
+
+      scene.remove(resources.group);
+      resources.geometries.forEach((geometry) => geometry.dispose());
+      resources.materials.forEach((material) => material.dispose());
+      resources.textures.forEach((texture) => texture.dispose());
+      const nextResources = buildPreviewGroup(model, options.wireframe, paint);
+      resources.group = nextResources.group;
+      resources.geometries = nextResources.geometries;
+      resources.materials = nextResources.materials;
+      resources.textures = nextResources.textures;
+      scene.add(resources.group);
+      frameModel(resources.group, camera, controls);
     },
     dispose() {
       resizeObserver.disconnect();
