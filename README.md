@@ -25,17 +25,30 @@ apps can be added inside the same shell as the project grows.
 
 The home screen also supports curated examples for visitors who do not know
 FiveM tooling or do not have model files ready. Example assets live in
-`examples/assets` and are listed in `examples/examples.json`.
+`examples/assets`.
 
 Example layout:
 
 ```text
 examples/
-|-- examples.json
 `-- assets/
-    `-- baller/
-        |-- Baller.yft
-        `-- Baller.ytd
+    |-- Cars/
+    |   `-- Baller8/
+    |       |-- baller8_hi.yft
+    |       `-- baller8+hi.ytd
+    `-- Props/
+        `-- PoolTable/
+            |-- prop_pooltable_02.ydr
+            `-- prop_pooltable_02+hidr.ytd
+```
+
+FiveMesh reads the example name from the example folder and displays a small
+type badge from the `.yft` or `.ydr` extension.
+
+On this PC, put examples here:
+
+```text
+D:\Develop\FiveMesh\examples\assets
 ```
 
 ## Architecture
@@ -46,7 +59,7 @@ FiveMesh/
 |   |-- engine/      .NET decoder and future model operations
 |   |-- server/      Express API and Engine process boundary
 |   `-- web/         React Three.js viewer
-|-- examples/        Hosted demo assets and example manifest
+|-- examples/        Hosted demo asset folders
 |-- docs/            Architecture and roadmap notes
 `-- .github/         CI and review templates
 ```
@@ -67,7 +80,8 @@ of the app is not tied to a single decoder implementation.
 - C#/.NET is used for the Engine because CodeWalker.Core is the decoding layer.
 - The local dev scripts remain in the repo for maintenance, but the intended
 user experience is the hosted public app.
-- GTA V asset files are intentionally ignored and should not be committed.
+- Curated hosted examples live under `examples/assets`; keep anything else out
+of git.
 
 ## Quality
 

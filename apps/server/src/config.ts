@@ -20,7 +20,8 @@ export const loadConfig = (): AppConfig => ({
     process.env.ENGINE_PROJECT_PATH ??
     path.join(repositoryRoot, "apps", "engine", "Engine.csproj"),
   examplesDirectory:
-    process.env.EXAMPLES_DIRECTORY ?? path.join(repositoryRoot, "examples"),
+    process.env.EXAMPLES_DIRECTORY ??
+    path.join(repositoryRoot, "examples", "assets"),
   engineTimeoutMs: readPositiveNumber(process.env.ENGINE_TIMEOUT_MS, 120_000),
   maxUploadBytes: readPositiveNumber(
     process.env.MAX_UPLOAD_BYTES,

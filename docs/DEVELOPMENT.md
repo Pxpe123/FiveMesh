@@ -43,9 +43,16 @@ through neutral preview JSON only.
 
 ## Hosted examples
 
-Put demo files in `examples/assets` and list them in `examples/examples.json`.
-The Server exposes available examples through `/api/examples`, and the Web home
-screen lets visitors open them without bringing their own files.
+Put demo files in `examples/assets`, grouped by category. The default Server
+config scans that folder through `/api/examples`, and the Web home screen lets
+visitors open them without bringing their own files.
+
+Example:
+
+```text
+examples/assets/Cars/Baller8/baller8_hi.yft
+examples/assets/Cars/Baller8/baller8+hi.ytd
+```
 
 Only add assets you are comfortable hosting in the public app.
 

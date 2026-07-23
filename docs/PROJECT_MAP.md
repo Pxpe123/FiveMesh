@@ -64,7 +64,7 @@ FiveMesh/
 |       |-- features/          Upload and viewer capabilities
 |       |-- styles/            CSS split by responsibility
 |       `-- types/             Browser-side contracts
-|-- examples/                  Hosted demo assets and manifest
+|-- examples/                  Hosted demo asset folders
 `-- docs/                      Architecture and development guidance
 ```
 

@@ -1,111 +1,134 @@
-import { access, readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { HttpError } from "../../errors/HttpError.js";
 import type { ModelUpload } from "../models/modelFiles.js";
 
+export type ExampleType = "YDR" | "YFT";
+
 export type ExampleSummary = {
   id: string;
   name: string;
-  description: string;
+  category: string;
+  type: ExampleType;
   modelFile: string;
   textureFile?: string;
-  available: boolean;
 };
 
-type ExampleManifestEntry = Omit<ExampleSummary, "available">;
+type ExampleEntry = ExampleSummary & {
+  folderPath: string;
+};
+
+const modelExtensions = new Set([".ydr", ".yft"]);
 
 export class ExampleCatalog {
   constructor(private readonly examplesDirectory: string) {}
 
   async list(): Promise<ExampleSummary[]> {
-    const entries = await this.readManifest();
-    return Promise.all(
-      entries.map(async (entry) => ({
-        ...entry,
-        available:
-          (await exists(this.resolveAssetPath(entry.modelFile))) &&
-          (!entry.textureFile ||
-            (await exists(this.resolveAssetPath(entry.textureFile)))),
-      })),
-    );
+    const examples = await this.readExamples();
+    return examples.map(({ folderPath: _folderPath, ...example }) => example);
   }
 
   async readUpload(id: string): Promise<ModelUpload> {
-    const examples = await this.readManifest();
+    const examples = await this.readExamples();
     const example = examples.find((entry) => entry.id === id);
     if (!example) {
       throw new HttpError(404, "Example model was not found.");
     }
 
-    const modelPath = this.resolveAssetPath(example.modelFile);
-    const texturePath = example.textureFile
-      ? this.resolveAssetPath(example.textureFile)
-      : undefined;
-
     return {
       model: {
-        originalname: path.basename(example.modelFile),
-        buffer: await readFile(modelPath),
+        originalname: example.modelFile,
+        buffer: await readFile(path.join(example.folderPath, example.modelFile)),
       },
-      textures: texturePath
+      textures: example.textureFile
         ? {
-            originalname: path.basename(example.textureFile ?? "textures.ytd"),
-            buffer: await readFile(texturePath),
+            originalname: example.textureFile,
+            buffer: await readFile(
+              path.join(example.folderPath, example.textureFile),
+            ),
           }
         : undefined,
     };
   }
 
-  private async readManifest(): Promise<ExampleManifestEntry[]> {
-    const manifestPath = path.join(this.examplesDirectory, "examples.json");
-    if (!(await exists(manifestPath))) {
-      return [];
-    }
+  private async readExamples(): Promise<ExampleEntry[]> {
+    const categories = await readChildDirectories(this.examplesDirectory);
+    const examples = (
+      await Promise.all(
+        categories.map((category) => this.readCategoryExamples(category)),
+      )
+    ).flat();
 
-    const parsed = JSON.parse(await readFile(manifestPath, "utf8")) as unknown;
-    if (!Array.isArray(parsed)) {
-      throw new HttpError(500, "Example manifest must be a JSON array.");
-    }
-
-    return parsed.filter(isManifestEntry);
-  }
-
-  private resolveAssetPath(relativePath: string) {
-    const resolved = path.resolve(this.examplesDirectory, relativePath);
-    const root = path.resolve(this.examplesDirectory);
-    if (!resolved.startsWith(root + path.sep)) {
-      throw new HttpError(
-        400,
-        "Example asset path is outside the examples folder.",
+    return examples
+      .filter((example): example is ExampleEntry => Boolean(example))
+      .sort(
+        (left, right) =>
+          left.category.localeCompare(right.category) ||
+          left.name.localeCompare(right.name),
       );
+  }
+
+  private async readCategoryExamples(category: string) {
+    const categoryPath = path.join(this.examplesDirectory, category);
+    const folders = await readChildDirectories(categoryPath);
+    return Promise.all(
+      folders.map((folder) =>
+        this.readExampleFolder(category, path.join(categoryPath, folder), folder),
+      ),
+    );
+  }
+
+  private async readExampleFolder(
+    category: string,
+    folderPath: string,
+    folder: string,
+  ): Promise<ExampleEntry | null> {
+    const files = (await readdir(folderPath)).sort((left, right) =>
+      left.localeCompare(right),
+    );
+    const modelFile = files.find((file) =>
+      modelExtensions.has(path.extname(file).toLowerCase()),
+    );
+
+    if (!modelFile) {
+      return null;
     }
 
-    return resolved;
+    const textureFile = files.find(
+      (file) => path.extname(file).toLowerCase() === ".ytd",
+    );
+
+    return {
+      id: `${slug(category)}-${slug(folder)}`,
+      name: formatExampleName(folder),
+      category: formatExampleName(category),
+      type: path.extname(modelFile).slice(1).toUpperCase() as ExampleType,
+      modelFile,
+      textureFile,
+      folderPath,
+    };
   }
 }
 
-function isManifestEntry(value: unknown): value is ExampleManifestEntry {
-  return Boolean(
-    value &&
-      typeof value === "object" &&
-      "id" in value &&
-      typeof value.id === "string" &&
-      "name" in value &&
-      typeof value.name === "string" &&
-      "description" in value &&
-      typeof value.description === "string" &&
-      "modelFile" in value &&
-      typeof value.modelFile === "string" &&
-      (!("textureFile" in value) || typeof value.textureFile === "string"),
-  );
-}
-
-async function exists(filePath: string) {
+async function readChildDirectories(directory: string) {
   try {
-    await access(filePath);
-    return true;
+    const entries = await readdir(directory, { withFileTypes: true });
+    return entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .sort((left, right) => left.localeCompare(right));
   } catch {
-    return false;
+    return [];
   }
+}
+
+function formatExampleName(folder: string) {
+  return folder
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function slug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }

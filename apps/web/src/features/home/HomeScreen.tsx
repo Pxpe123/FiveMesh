@@ -77,12 +77,14 @@ export function HomeScreen({
               key={example.id}
               type="button"
               className="example-card"
-              disabled={!example.available}
               onClick={() => onLoadExample(example.id)}
             >
-              <span>{example.available ? "ready" : "missing files"}</span>
+              <span>{example.type}</span>
               <strong>{example.name}</strong>
-              <small>{example.description}</small>
+              <small>
+                {example.category} example loaded from the hosted FiveMesh
+                examples folder.
+              </small>
               <code>{example.modelFile}</code>
             </button>
           ))}

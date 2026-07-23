@@ -3,10 +3,10 @@ import type { PreviewModel } from "../types/previewModel";
 export type ExampleModel = {
   id: string;
   name: string;
-  description: string;
+  category: string;
+  type: "YDR" | "YFT";
   modelFile: string;
   textureFile?: string;
-  available: boolean;
 };
 
 export async function requestExamples(): Promise<ExampleModel[]> {
@@ -41,12 +41,12 @@ function isExampleModel(value: unknown): value is ExampleModel {
       typeof value.id === "string" &&
       "name" in value &&
       typeof value.name === "string" &&
-      "description" in value &&
-      typeof value.description === "string" &&
+      "category" in value &&
+      typeof value.category === "string" &&
+      "type" in value &&
+      (value.type === "YDR" || value.type === "YFT") &&
       "modelFile" in value &&
-      typeof value.modelFile === "string" &&
-      "available" in value &&
-      typeof value.available === "boolean",
+      typeof value.modelFile === "string",
   );
 }
 

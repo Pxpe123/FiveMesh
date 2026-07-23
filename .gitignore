@@ -25,7 +25,6 @@ coverage/
 
 # Curated hosted examples are intentional.
 !examples/
-!examples/examples.json
 !examples/assets/
 !examples/assets/**/
 !examples/assets/**/*.ydr
