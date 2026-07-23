@@ -1,15 +1,23 @@
 # FiveMesh
 
-FiveMesh is a local GTA V asset preview pipeline for `.ydr` drawables and
-`.yft` vehicle fragments. Drop a model with an optional `.ytd` texture
-dictionary, and the app decodes it through a .NET Engine, serves it through an
-Express API, and renders it in a React + Three.js viewer.
+FiveMesh is a hosted GTA V asset preview tool for `.ydr` drawables and `.yft`
+vehicle fragments. Users can upload a model with an optional `.ytd` texture
+dictionary and inspect the decoded result in a React + Three.js viewer.
 
-The project is intentionally split into small applications so it can grow into
-model editing, exporting, batch tools, and better material support without
-turning the viewer into one tangled codebase.
+This repository is private. It is maintained as the source code for the hosted
+public app and as a portfolio-quality engineering sample for selected reviewers.
 
-## Apps
+## Product Focus
+
+FiveMesh is built for fast visual inspection of GTA V model assets:
+
+- decode YDR/YFT model files through a dedicated .NET Engine
+- resolve embedded or uploaded YTD texture dictionaries
+- serve a neutral preview format through an Express API
+- render textured geometry in a browser-based Three.js viewer
+- keep the architecture ready for future editing, export, and batch workflows
+
+## Architecture
 
 ```text
 FiveMesh/
@@ -17,67 +25,47 @@ FiveMesh/
 |   |-- engine/      .NET decoder and future model operations
 |   |-- server/      Express API and Engine process boundary
 |   `-- web/         React Three.js viewer
-|-- packages/
-|   `-- contracts/   Cross-app schemas
-|-- docs/            Architecture and development notes
-`-- .github/         GitHub templates and CI
+|-- docs/            Architecture and roadmap notes
+`-- .github/         CI and review templates
 ```
 
-## Requirements
+The codebase is split by responsibility:
 
-- Windows
-- Node.js with npm
-- .NET SDK 10
+- `apps/engine` owns binary decoding and model extraction.
+- `apps/server` owns upload handling, temporary file lifecycle, and Engine execution.
+- `apps/web` owns the user interface, viewer state, and WebGL rendering.
 
-## Quick Start
+The key boundary is the preview JSON produced by the Engine and consumed by the
+Server/Web layers. CodeWalker-specific types stay inside the Engine so the rest
+of the app is not tied to a single decoder implementation.
 
-Double-click `Start-Dev.bat`.
+## Engineering Notes
 
-It installs missing Server/Web packages, builds the Engine, and starts:
+- TypeScript is used for the Server and Web apps.
+- C#/.NET is used for the Engine because CodeWalker.Core is the decoding layer.
+- The local dev scripts remain in the repo for maintenance, but the intended
+user experience is the hosted public app.
+- GTA V asset files are intentionally ignored and should not be committed.
 
-- API server: [http://localhost:3000](http://localhost:3000)
-- Web viewer: [http://localhost:5173](http://localhost:5173)
+## Quality
 
-## Manual Commands
-
-```sh
-npm run install:all
-npm run dev
-```
-
-Quality checks:
+The repository includes a CI workflow that validates the project on GitHub:
 
 ```sh
-npm run typecheck
-npm run build
 npm run check
 ```
 
-## Using The Viewer
-
-Drop either:
-
-- a `.ydr` and optional matching `.ytd`
-- a `.yft` and optional matching `.ytd`
-
-For vehicles, use the `_hi.yft` when you want the highest-detail model. Some
-materials reference shared GTA V dictionaries such as `vehshare.ytd`; FiveMesh
-can only display textures embedded in the model or supplied by the uploaded
-YTD.
-
-Uploaded files are written to a temporary working directory and removed after
-the preview response is created.
+That command runs TypeScript checks, builds the Engine/Server/Web apps, and
+verifies C# formatting.
 
 ## Documentation
 
 - [Project map](docs/PROJECT_MAP.md)
-- [Development guide](docs/DEVELOPMENT.md)
 - [Roadmap](docs/ROADMAP.md)
 
-## Repository Notes
+## Access
 
-The root package only coordinates commands. `apps/server` and `apps/web` keep
-their own `node_modules` folders and lockfiles on purpose.
-
-No license has been selected yet. Add a license before publishing publicly if
-you want other people to use, modify, or redistribute the code.
+This is a private source repository. Access may be granted to selected reviewers
+or potential employers to evaluate architecture, implementation quality, and
+project direction. Public usage is through the hosted FiveMesh app, not by
+cloning or running this repository.

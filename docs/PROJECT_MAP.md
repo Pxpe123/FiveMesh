@@ -31,14 +31,10 @@ flowchart LR
         CodeWalker --> Contract
     end
 
-    Schema["packages/contracts/model-preview.schema.json"]
-
     User --> Upload
     Api -->|POST /api/models/preview| Route
     Client -->|Engine preview| Command
     Contract -->|versioned JSON| Client
-    Schema -. defines .-> Contract
-    Schema -. consumed by .-> Viewer
 ```
 
 The boundary between applications is the versioned preview JSON. Engine owns
@@ -68,8 +64,6 @@ FiveMesh/
 |       |-- features/          Upload and viewer capabilities
 |       |-- styles/            CSS split by responsibility
 |       `-- types/             Browser-side contracts
-|-- packages/
-|   `-- contracts/             Cross-application data schemas
 `-- docs/                      Architecture and development guidance
 ```
 
@@ -99,6 +93,6 @@ flowchart TB
 ```
 
 Keep CodeWalker types inside `apps/engine/Infrastructure/CodeWalker`. The
-Server and Web should only know the neutral contracts. This keeps future
+Server and Web should only know the neutral preview JSON. This keeps future
 editors, exporters, thumbnail generators, and batch converters independent from
 the current preview screen.

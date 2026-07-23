@@ -18,7 +18,7 @@ flowchart LR
         Fixtures["Add legal sample fixtures or stubs"]
     end
 
-    subgraph Contracts["Contracts"]
+    subgraph Contracts["Preview Contract"]
         Schema["Versioned preview schema"]
         GeneratedTypes["Generate TypeScript types from schema"]
         ContractTests["Contract drift checks"]
@@ -90,7 +90,7 @@ flowchart LR
 
 When a roadmap item crosses app boundaries, update it in this order:
 
-1. `packages/contracts`
+1. preview contract shape
 2. `apps/engine`
 3. `apps/server`
 4. `apps/web`

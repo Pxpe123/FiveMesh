@@ -14,8 +14,8 @@ Start the local development environment:
 npm run dev
 ```
 
-`Start-Dev.bat` is the easiest Windows entry point. It builds the Engine and
-starts the Server and Web apps in separate terminals.
+`Start-Dev.bat` is the easiest Windows maintenance entry point. It builds the
+Engine and starts the Server and Web apps in separate terminals.
 
 ## Validation
 
@@ -38,14 +38,12 @@ npm run format:check
 - `apps/engine` owns decoding and future model operations.
 - `apps/server` owns upload validation, temporary files, and Engine execution.
 - `apps/web` owns interaction, viewer state, and Three.js rendering.
-- `packages/contracts` owns schemas shared across app boundaries.
-
 Keep CodeWalker types inside `apps/engine`. Server and Web should communicate
-through versioned contracts only.
+through neutral preview JSON only.
 
 ## Adding a feature
 
-1. Add or update the contract first when data crosses app boundaries.
+1. Add or update the preview contract first when data crosses app boundaries.
 2. Add the Engine operation if the feature needs model decoding or mutation.
 3. Add the Server route/service that owns file lifecycle and execution.
 4. Add the Web feature and API call.
