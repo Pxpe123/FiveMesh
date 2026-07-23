@@ -1,0 +1,47 @@
+.workspace {
+  display: grid;
+  grid-template-columns: 370px 1fr;
+  height: calc(100vh - 74px);
+}
+
+.sidebar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 38px 30px 28px;
+  overflow-y: auto;
+  border-right: 1px solid #20262e;
+  background: #0d1218;
+}
+
+.viewport-panel {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  background: #090d12;
+}
+
+@media (max-width: 800px) {
+  .topbar {
+    padding: 0 18px;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .sidebar {
+    border-right: 0;
+  }
+
+  .viewport-panel {
+    min-height: 65vh;
+  }
+
+  .research-note {
+    display: none;
+  }
+}

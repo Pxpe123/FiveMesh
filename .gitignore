@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+*.tsbuildinfo
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+*.suo
+*.user
+
+# .NET build output
+**/bin/
+**/obj/

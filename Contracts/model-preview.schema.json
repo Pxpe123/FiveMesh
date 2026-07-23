@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fivemesh.local/contracts/model-preview.schema.json",
+  "title": "FiveMesh model preview",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "name",
+    "format",
+    "meshes",
+    "textures",
+    "bounds"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "name": {
+      "type": "string"
+    },
+    "format": {
+      "enum": ["YDR", "YFT"]
+    },
+    "meshes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mesh"
+      }
+    },
+    "textures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/texture"
+      }
+    },
+    "bounds": {
+      "$ref": "#/$defs/bounds"
+    }
+  },
+  "$defs": {
+    "numberArray": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "mesh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "positions",
+        "normals",
+        "uvs",
+        "indices",
+        "texture",
+        "shader",
+        "renderBucket"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "positions": {
+          "$ref": "#/$defs/numberArray"
+        },
+        "normals": {
+          "$ref": "#/$defs/numberArray"
+        },
+        "uvs": {
+          "$ref": "#/$defs/numberArray"
+        },
+        "indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "texture": {
+          "type": ["string", "null"]
+        },
+        "shader": {
+          "type": "string"
+        },
+        "renderBucket": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
+    },
+    "texture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "dds"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "dds": {
+          "type": "string",
+          "contentEncoding": "base64"
+        }
+      }
+    },
+    "vector3": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "$ref": "#/$defs/vector3"
+        },
+        "max": {
+          "$ref": "#/$defs/vector3"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "fivemesh",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix Server && npm install --prefix Web",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./Start-Dev.ps1",
+    "dev:server": "npm run dev --prefix Server",
+    "dev:web": "npm run dev --prefix Web",
+    "build": "dotnet build Engine/Engine.csproj && npm run build --prefix Server && npm run build --prefix Web",
+    "typecheck": "npm run typecheck --prefix Server && npm run typecheck --prefix Web",
+    "check": "npm run typecheck && npm run build",
+    "start": "npm run start --prefix Server"
+  }
+}
