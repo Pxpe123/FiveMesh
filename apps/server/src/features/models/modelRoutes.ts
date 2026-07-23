@@ -13,7 +13,11 @@ export const createModelRouter = (config: AppConfig) => {
     limits: { fileSize: config.maxUploadBytes, files: 6 },
   });
   const previewService = new ModelPreviewService(
-    new EngineClient(config.engineProjectPath, config.engineTimeoutMs),
+    new EngineClient(
+      config.engineProjectPath,
+      config.engineExecutablePath,
+      config.engineTimeoutMs,
+    ),
   );
 
   router.post(

@@ -1,25 +1,13 @@
-import type { ExampleModel } from "../../api/exampleApi";
-import {
-  fiveMeshApps,
-  plannedFeatures,
-  type AppPage,
-} from "../../constants/pages";
+import { Link } from "react-router-dom";
+import { fiveMeshApps, plannedFeatures } from "../../constants/pages";
+import { useExamples } from "../examples/useExamples";
 
-type HomeScreenProps = {
-  examples: ExampleModel[];
-  examplesLoading: boolean;
-  exampleError: string;
-  onOpenApp: (page: AppPage) => void;
-  onLoadExample: (id: string) => void;
-};
-
-export function HomeScreen({
-  examples,
-  examplesLoading,
-  exampleError,
-  onOpenApp,
-  onLoadExample,
-}: HomeScreenProps) {
+export function HomeScreen() {
+  const {
+    examples,
+    loading: examplesLoading,
+    error: exampleError,
+  } = useExamples();
   return (
     <section className="home-screen">
       <div className="home-intro">
@@ -31,13 +19,9 @@ export function HomeScreen({
           first app is the model viewer, with room for editing and batch tools
           later.
         </p>
-        <button
-          type="button"
-          className="primary-action"
-          onClick={() => onOpenApp("viewer")}
-        >
+        <Link className="primary-action" to="/viewer">
           Open viewer
-        </button>
+        </Link>
       </div>
 
       <div className="home-section">
@@ -47,17 +31,19 @@ export function HomeScreen({
         </div>
         <div className="app-grid">
           {fiveMeshApps.map((app) => (
-            <button
+            <Link
               key={app.name}
-              type="button"
-              className="app-card"
-              disabled={app.status !== "available"}
-              onClick={() => onOpenApp(app.id)}
+              className={`app-card ${app.status !== "available" ? "planned" : ""}`}
+              to={app.status === "available" ? `/${app.id}` : "#"}
+              aria-disabled={app.status !== "available"}
+              onClick={(event) => {
+                if (app.status !== "available") event.preventDefault();
+              }}
             >
               <span>{app.status}</span>
               <strong>{app.name}</strong>
               <small>{app.description}</small>
-            </button>
+            </Link>
           ))}
         </div>
       </div>
@@ -77,11 +63,10 @@ export function HomeScreen({
             </p>
           )}
           {examples.map((example) => (
-            <button
+            <Link
               key={example.id}
-              type="button"
               className="example-card"
-              onClick={() => onLoadExample(example.id)}
+              to={`/viewer?example=${encodeURIComponent(example.id)}`}
             >
               <span>{example.type}</span>
               <strong>{example.name}</strong>
@@ -90,7 +75,7 @@ export function HomeScreen({
                 examples folder.
               </small>
               <code>{example.modelFile}</code>
-            </button>
+            </Link>
           ))}
         </div>
       </div>

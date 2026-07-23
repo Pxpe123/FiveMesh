@@ -89,17 +89,17 @@ button {
   background: #0a0f14;
 }
 
-.main-nav button {
+.main-nav a {
   padding: 7px 11px;
   border: 0;
   border-radius: 6px;
   color: #788592;
   background: transparent;
   font-size: 12px;
-  cursor: pointer;
+  text-decoration: none;
 }
 
-.main-nav button.active {
+.main-nav a.active {
   color: #baf7d7;
   background: #183326;
 }

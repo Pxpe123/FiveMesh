@@ -5,13 +5,18 @@
   "description": "Local GTA V YDR/YFT/YTD preview pipeline with a .NET decoder, Express API, and React Three.js viewer.",
   "scripts": {
     "install:all": "npm install --prefix apps/server && npm install --prefix apps/web",
-    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./Start-Dev.ps1",
+    "dev": "Start-Dev.bat",
     "dev:server": "npm run dev --prefix apps/server",
     "dev:web": "npm run dev --prefix apps/web",
-    "build": "dotnet build apps/engine/Engine.csproj && npm run build --prefix apps/server && npm run build --prefix apps/web",
+    "start:server": "npm run start --prefix apps/server",
+    "start:web": "npm run preview --prefix apps/web -- --host 0.0.0.0 --port 4173",
+    "start:all": "Start-Dev.bat",
+    "build": "dotnet publish apps/engine/Engine.csproj -c Release -o build/engine --no-restore && npm run build --prefix apps/server && npm run build --prefix apps/web",
+    "build:all": "dotnet publish apps/engine/Engine.csproj -c Release -o build/engine --no-restore && npm run build --prefix apps/server && npm run build --prefix apps/web",
     "typecheck": "npm run typecheck --prefix apps/server && npm run typecheck --prefix apps/web",
     "format:check": "dotnet format apps/engine/Engine.csproj --no-restore --verify-no-changes",
     "check": "npm run typecheck && npm run build && npm run format:check",
-    "start": "npm run start --prefix apps/server"
+    "start": "npm run start --prefix apps/server",
+    "start:built": "Run-Prod.bat"
   }
 }

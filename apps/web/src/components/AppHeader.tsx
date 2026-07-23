@@ -1,43 +1,32 @@
-import type { AppPage } from "../constants/pages";
+import { NavLink } from "react-router-dom";
 import { supportedFormats } from "../constants/pages";
 
-type AppHeaderProps = {
-  activePage: AppPage;
-  onPageChange: (page: AppPage) => void;
-};
-
-export function AppHeader({ activePage, onPageChange }: AppHeaderProps) {
+export function AppHeader() {
   return (
     <header className="topbar">
       <div className="brand">
-        <button
-          type="button"
-          className="brand-button"
-          onClick={() => onPageChange("home")}
-          aria-label="Open FiveMesh home"
-        >
+        <NavLink className="brand-button" to="/" aria-label="Open FiveMesh home">
           <span className="brand-mark">F</span>
-        </button>
+        </NavLink>
         <div>
           <strong>FiveMesh</strong>
           <span>RAGE asset tools</span>
         </div>
       </div>
       <nav className="main-nav" aria-label="FiveMesh apps">
-        <button
-          type="button"
-          className={activePage === "home" ? "active" : ""}
-          onClick={() => onPageChange("home")}
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) => (isActive ? "active" : "")}
         >
           Home
-        </button>
-        <button
-          type="button"
-          className={activePage === "viewer" ? "active" : ""}
-          onClick={() => onPageChange("viewer")}
+        </NavLink>
+        <NavLink
+          to="/viewer"
+          className={({ isActive }) => (isActive ? "active" : "")}
         >
           Viewer
-        </button>
+        </NavLink>
       </nav>
       <div className="format-pills" aria-label="Supported formats">
         {supportedFormats.map((format) => (

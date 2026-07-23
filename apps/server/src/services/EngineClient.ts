@@ -6,6 +6,7 @@ const execFileAsync = promisify(execFile);
 export class EngineClient {
   constructor(
     private readonly projectPath: string,
+    private readonly executablePath: string,
     private readonly timeoutMs: number,
   ) {}
 
@@ -14,16 +15,21 @@ export class EngineClient {
     outputPath: string,
     texturePaths: string[] = [],
   ) {
-    const engineArguments = [
-      "run",
-      "--project",
-      this.projectPath,
-      "--no-build",
-      "--",
-      "preview",
-      modelPath,
-      outputPath,
-    ];
+    const useBuiltEngine =
+      Boolean(this.executablePath) && this.executablePath.endsWith(".dll");
+
+    const engineArguments = useBuiltEngine
+      ? [this.executablePath, "preview", modelPath, outputPath]
+      : [
+          "run",
+          "--project",
+          this.projectPath,
+          "--no-build",
+          "--",
+          "preview",
+          modelPath,
+          outputPath,
+        ];
 
     engineArguments.push(...texturePaths);
 

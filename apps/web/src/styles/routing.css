@@ -1,0 +1,7 @@
+.page-loading {
+  display: grid;
+  min-height: calc(100vh - 74px);
+  place-items: center;
+  color: #84909d;
+  font-size: 13px;
+}

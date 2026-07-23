@@ -50,6 +50,11 @@ if errorlevel 1 (
   exit /b 1
 )
 
+set "FIVEMESH_MODE=dev"
+set "FIVEMESH_ROOT=%~dp0"
+set "ENGINE_PROJECT_PATH=%~dp0apps\engine\Engine.csproj"
+set "EXAMPLES_DIRECTORY=%~dp0examples\assets"
+
 echo Starting API server on http://localhost:3000
 start "FiveMesh API Server" cmd /k "cd /d ""%~dp0"" && npm.cmd run dev --prefix apps/server"
 

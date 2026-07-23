@@ -11,6 +11,7 @@
 }
 
 .primary-action {
+  display: inline-block;
   margin-top: 24px;
   padding: 12px 16px;
   border: 0;
@@ -19,6 +20,7 @@
   background: #61e5a7;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .home-section {
@@ -55,13 +57,14 @@
   text-align: left;
   cursor: pointer;
   transition: border 0.2s ease-in-out;
+  text-decoration: none;
 }
 
 .example-card:hover,
 .app-card:hover {
   border: 1px solid #61e5a7;
 }
-.app-card:disabled,
+.app-card.planned,
 .example-card:disabled {
   cursor: not-allowed;
   opacity: 0.55;

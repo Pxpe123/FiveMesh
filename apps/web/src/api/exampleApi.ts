@@ -1,4 +1,5 @@
 import type { PreviewModel } from "../types/previewModel";
+import { apiUrl } from "./apiBase";
 
 export type ExampleModel = {
   id: string;
@@ -10,7 +11,7 @@ export type ExampleModel = {
 };
 
 export async function requestExamples(): Promise<ExampleModel[]> {
-  const response = await fetch(`/api/examples?ts=${Date.now()}`, {
+  const response = await fetch(apiUrl(`/api/examples?ts=${Date.now()}`), {
     cache: "no-store",
   });
   if (!response.ok) {
@@ -23,7 +24,7 @@ export async function requestExamples(): Promise<ExampleModel[]> {
 
 export async function requestExamplePreview(id: string): Promise<PreviewModel> {
   const response = await fetch(
-    `/api/examples/${encodeURIComponent(id)}/preview?ts=${Date.now()}`,
+    apiUrl(`/api/examples/${encodeURIComponent(id)}/preview?ts=${Date.now()}`),
     {
       cache: "no-store",
     },

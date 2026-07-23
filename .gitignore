@@ -23,6 +23,8 @@ coverage/
 *.yft
 *.ytd
 
+/build
+
 # Curated hosted examples are intentional.
 !examples/
 !examples/assets/

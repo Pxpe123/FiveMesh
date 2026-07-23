@@ -1,5 +1,6 @@
 import type { SelectedModelFiles } from "../features/model-upload/fileSelection";
 import type { PreviewModel } from "../types/previewModel";
+import { apiUrl } from "./apiBase";
 
 export async function requestModelPreview(
   files: SelectedModelFiles,
@@ -14,7 +15,7 @@ export async function requestModelPreview(
     body.append("textures", texture);
   }
 
-  const response = await fetch("/api/models/preview", {
+  const response = await fetch(apiUrl("/api/models/preview"), {
     method: "POST",
     body,
   });

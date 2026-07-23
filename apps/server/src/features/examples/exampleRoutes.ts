@@ -9,7 +9,11 @@ export const createExampleRouter = (config: AppConfig) => {
   const router = Router();
   const catalog = new ExampleCatalog(config.examplesDirectory);
   const previewService = new ModelPreviewService(
-    new EngineClient(config.engineProjectPath, config.engineTimeoutMs),
+    new EngineClient(
+      config.engineProjectPath,
+      config.engineExecutablePath,
+      config.engineTimeoutMs,
+    ),
   );
 
   router.get("/", async (_request, response) => {

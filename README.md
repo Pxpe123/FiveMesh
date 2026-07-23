@@ -79,6 +79,15 @@ The key boundary is the preview JSON produced by the Engine and consumed by the
 Server/Web layers. CodeWalker-specific types stay inside the Engine so the rest
 of the app is not tied to a single decoder implementation.
 
+The Web app uses route-based pages:
+
+- `/` is the product home screen and curated example catalogue.
+- `/viewer` is the interactive model viewer.
+- `/viewer?example=<id>` opens a prepared example directly.
+
+Home and viewer pages are loaded as separate browser chunks. Example metadata is
+cached in the Web layer so moving between pages does not repeat the same request.
+
 ## Engineering Notes
 
 - TypeScript is used for the Server and Web apps.
@@ -98,6 +107,34 @@ npm run check
 
 That command runs TypeScript checks, builds the Engine/Server/Web apps, and
 verifies C# formatting.
+
+## Free Local Hosting
+
+If you want to keep FiveMesh running on your own machine and still share it
+with someone outside your network, the simplest free path is:
+
+1. run the local dev stack
+2. expose the web app through Cloudflare Tunnel
+3. send the tunnel URL to the reviewer
+
+On this project, the web dev server already proxies `/api` to the local server,
+so the tunnel can point at the web port directly.
+
+Local launch:
+
+```bat
+Start-Dev.bat
+```
+
+Tunnel launch:
+
+```bat
+Start-Tunnel.bat
+```
+
+The tunnel command routes `http://localhost:5173` through Cloudflare without
+publishing your raw home IP directly. Keep the local dev windows open while the
+tunnel is live.
 
 ## Documentation
 
