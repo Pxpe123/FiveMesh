@@ -1,0 +1,9 @@
+[
+  {
+    "id": "baller",
+    "name": "Baller",
+    "description": "Vehicle fragment example for people who do not already have GTA V model files.",
+    "modelFile": "assets/baller/Baller.yft",
+    "textureFile": "assets/baller/Baller.ytd"
+  }
+]

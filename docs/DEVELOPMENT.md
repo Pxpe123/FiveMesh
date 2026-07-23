@@ -41,6 +41,14 @@ npm run format:check
 Keep CodeWalker types inside `apps/engine`. Server and Web should communicate
 through neutral preview JSON only.
 
+## Hosted examples
+
+Put demo files in `examples/assets` and list them in `examples/examples.json`.
+The Server exposes available examples through `/api/examples`, and the Web home
+screen lets visitors open them without bringing their own files.
+
+Only add assets you are comfortable hosting in the public app.
+
 ## Adding a feature
 
 1. Add or update the preview contract first when data crosses app boundaries.

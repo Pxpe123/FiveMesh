@@ -24,10 +24,6 @@
 }
 
 @media (max-width: 800px) {
-  .topbar {
-    padding: 0 18px;
-  }
-
   .workspace {
     grid-template-columns: 1fr;
     height: auto;

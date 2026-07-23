@@ -31,6 +31,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 18px;
   height: 74px;
   padding: 0 30px;
   border-bottom: 1px solid #20262e;
@@ -41,6 +42,13 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.brand-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .brand-mark {
@@ -72,9 +80,45 @@ button {
   text-transform: uppercase;
 }
 
+.main-nav {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid #20262e;
+  border-radius: 8px;
+  background: #0a0f14;
+}
+
+.main-nav button {
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 6px;
+  color: #788592;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.main-nav button.active {
+  color: #baf7d7;
+  background: #183326;
+}
+
 .format-pills {
   display: flex;
   gap: 7px;
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 14px 18px;
+  }
+
+  .format-pills {
+    display: none;
+  }
 }
 
 .format-pills span {

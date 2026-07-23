@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 
 import { loadConfig, type AppConfig } from "./config.js";
+import { createExampleRouter } from "./features/examples/exampleRoutes.js";
 import { createModelRouter } from "./features/models/modelRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandlers.js";
 import { healthRouter } from "./routes/healthRoutes.js";
@@ -14,6 +15,7 @@ export const createApp = (config: AppConfig = loadConfig()) => {
   app.use(express.json({ limit: "1mb" }));
 
   app.use("/api", healthRouter);
+  app.use("/api/examples", createExampleRouter(config));
   app.use("/api/models", createModelRouter(config));
 
   app.use(notFoundHandler);

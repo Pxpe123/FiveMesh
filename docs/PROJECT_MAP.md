@@ -64,6 +64,7 @@ FiveMesh/
 |       |-- features/          Upload and viewer capabilities
 |       |-- styles/            CSS split by responsibility
 |       `-- types/             Browser-side contracts
+|-- examples/                  Hosted demo assets and manifest
 `-- docs/                      Architecture and development guidance
 ```
 
@@ -75,6 +76,7 @@ FiveMesh/
 | Add model transforms | Add a new `transform` command and transformation use case | Add `/api/models/transform` and manage its files | Add an editor feature and transform controls |
 | Export a changed model | Add an `export` command and CodeWalker writer | Stream the generated file | Add an export action and download handling |
 | Improve material accuracy | Extract more shader parameters | Pass the versioned result unchanged | Map the new material fields to Three.js |
+| Add a hosted example model | No change unless the format is new | Add the asset entry to the examples manifest | Show it on the home screen |
 | Add jobs or progress | Emit machine-readable progress events | Run Engine behind a job service | Add progress and cancellation UI |
 | Add persistence | Keep Engine stateless | Add a repository/storage service | Add project browsing and save states |
 

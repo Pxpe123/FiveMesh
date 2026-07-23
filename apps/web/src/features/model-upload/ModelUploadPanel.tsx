@@ -27,10 +27,10 @@ export function ModelUploadPanel({
     <aside className="sidebar">
       <div>
         <p className="section-label">Asset input</p>
-        <h1>Inspect your GTA V models.</h1>
+        <h1>Inspect GTA V models.</h1>
         <p className="lede">
-          Drop a drawable or vehicle fragment with its texture dictionary.
-          Files stay on your machine and are only processed by this local server.
+          Upload a drawable or vehicle fragment with its texture dictionary, or
+          load a prepared example from the home page.
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export function ModelUploadPanel({
           +
         </span>
         <strong>Drop files here</strong>
-        <small>or click to browse · max 300 MB each</small>
+        <small>or click to browse - max 300 MB each</small>
       </button>
 
       <div className="file-list">
@@ -74,7 +74,7 @@ export function ModelUploadPanel({
         <FileRow
           label="Textures"
           file={files.textures}
-          fallback="YTD · optional"
+          fallback="YTD - optional"
         />
       </div>
 
@@ -91,7 +91,7 @@ export function ModelUploadPanel({
 
       <div className="research-note">
         <span>CodeWalker pipeline</span>
-        <p>RSC7 → drawable LOD → geometry → materials → WebGL</p>
+        <p>RSC7 - drawable LOD - geometry - materials - WebGL</p>
       </div>
     </aside>
   );
@@ -107,7 +107,7 @@ function FileRow({ label, file, fallback }: FileRowProps) {
   return (
     <div className={`file-row ${file ? "selected" : ""}`}>
       <span className="file-badge" aria-hidden="true">
-        {file ? "✓" : "·"}
+        {file ? "OK" : "-"}
       </span>
       <div>
         <strong>{file?.name ?? label}</strong>

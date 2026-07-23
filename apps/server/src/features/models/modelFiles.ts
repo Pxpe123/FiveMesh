@@ -3,8 +3,13 @@ import path from "node:path";
 import { HttpError } from "../../errors/HttpError.js";
 
 export type ModelUpload = {
-  model: Express.Multer.File;
-  textures?: Express.Multer.File;
+  model: ModelFile;
+  textures?: ModelFile;
+};
+
+export type ModelFile = {
+  originalname: string;
+  buffer: Buffer;
 };
 
 const supportedModelExtensions = new Set([".ydr", ".yft"]);
@@ -29,6 +34,6 @@ export function readModelUpload(
   return { model, textures };
 }
 
-export function extensionOf(file: Express.Multer.File) {
+export function extensionOf(file: ModelFile) {
   return path.extname(file.originalname).toLowerCase();
 }

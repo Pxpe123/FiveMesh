@@ -47,5 +47,6 @@ export function useModelPreview() {
     error,
     selectFiles,
     load,
+    setPreview,
   };
 }

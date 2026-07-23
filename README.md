@@ -5,7 +5,7 @@ vehicle fragments. Users can upload a model with an optional `.ytd` texture
 dictionary and inspect the decoded result in a React + Three.js viewer.
 
 This repository is private. It is maintained as the source code for the hosted
-public app and as a portfolio-quality engineering sample for selected reviewers.
+public app and as a technical review project for selected reviewers.
 
 ## Product Focus
 
@@ -17,6 +17,27 @@ FiveMesh is built for fast visual inspection of GTA V model assets:
 - render textured geometry in a browser-based Three.js viewer
 - keep the architecture ready for future editing, export, and batch workflows
 
+## Public App Experience
+
+The hosted app starts with a small home screen that explains what FiveMesh is
+and links into the available tools. The current tool is the Model Viewer. More
+apps can be added inside the same shell as the project grows.
+
+The home screen also supports curated examples for visitors who do not know
+FiveM tooling or do not have model files ready. Example assets live in
+`examples/assets` and are listed in `examples/examples.json`.
+
+Example layout:
+
+```text
+examples/
+|-- examples.json
+`-- assets/
+    `-- baller/
+        |-- Baller.yft
+        `-- Baller.ytd
+```
+
 ## Architecture
 
 ```text
@@ -25,6 +46,7 @@ FiveMesh/
 |   |-- engine/      .NET decoder and future model operations
 |   |-- server/      Express API and Engine process boundary
 |   `-- web/         React Three.js viewer
+|-- examples/        Hosted demo assets and example manifest
 |-- docs/            Architecture and roadmap notes
 `-- .github/         CI and review templates
 ```
