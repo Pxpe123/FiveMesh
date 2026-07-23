@@ -17,6 +17,7 @@ internal sealed record PreviewMesh(
     int[] Indices,
     string? Texture,
     string Shader,
+    string Material,
     byte RenderBucket
 );
 

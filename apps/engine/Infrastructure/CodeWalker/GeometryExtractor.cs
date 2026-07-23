@@ -65,6 +65,7 @@ internal static class GeometryExtractor
                         Indices: indices.Select(value => (int)value).ToArray(),
                         Texture: ShaderTextureResolver.FindDiffuseTexture(shader),
                         Shader: shader?.FileName.ToString() ?? "default",
+                        Material: shader?.Name.ToString() ?? "default",
                         RenderBucket: shader?.RenderBucket ?? 0
                     )
                 );

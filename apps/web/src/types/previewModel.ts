@@ -18,6 +18,7 @@ export type PreviewMesh = {
   indices: number[];
   texture: string | null;
   shader: string;
+  material: string;
   renderBucket: number;
 };
 

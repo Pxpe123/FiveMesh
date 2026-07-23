@@ -10,16 +10,8 @@ export type VehiclePaintSettings = {
 
 export type PaintChannel = "primary" | "secondary" | "rim" | "none";
 
-const primaryTextureAllowList = [
-  "vehicle_generic_detail2",
-  "vehicle_generic_mesh4",
-  "vehicle_generic_doorshut",
-];
-
-const secondaryTextureAllowList = [
-  "vehicle_generic_detail2_worn",
-  "vehicle_generic_mesh4_worn",
-];
+const materialPrimaryIds = new Set(["vehicle_paint4", "3234562258"]);
+const materialSecondaryIds = new Set(["vehicle_paint1", "4194005809"]);
 
 const nonPaintTextureHints = [
   "glass",
@@ -53,8 +45,10 @@ export function getDefaultVehiclePaint(): VehiclePaintSettings {
 }
 
 export function classifyPaintChannel(mesh: PreviewMesh): PaintChannel {
-  const descriptor = `${mesh.name} ${mesh.shader} ${mesh.texture ?? ""}`.toLowerCase();
+  const descriptor =
+    `${mesh.name} ${mesh.shader} ${mesh.material} ${mesh.texture ?? ""}`.toLowerCase();
   const texture = (mesh.texture ?? "").toLowerCase();
+  const material = mesh.material.toLowerCase();
 
   if (includesAny(descriptor, nonPaintTextureHints)) {
     return "none";
@@ -64,11 +58,11 @@ export function classifyPaintChannel(mesh: PreviewMesh): PaintChannel {
     return "rim";
   }
 
-  if (matchesAny(texture, secondaryTextureAllowList)) {
+  if (materialSecondaryIds.has(material)) {
     return "secondary";
   }
 
-  if (matchesAny(texture, primaryTextureAllowList)) {
+  if (materialPrimaryIds.has(material)) {
     return "primary";
   }
 
@@ -94,8 +88,4 @@ export function getMaterialColor(
 
 function includesAny(value: string, hints: string[]) {
   return hints.some((hint) => value.includes(hint));
-}
-
-function matchesAny(value: string, candidates: string[]) {
-  return candidates.some((candidate) => value === candidate || value.startsWith(`${candidate}_`));
 }
