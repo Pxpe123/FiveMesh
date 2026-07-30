@@ -41,7 +41,7 @@ export const hackGames: HackGameDefinition[] = [
     status: "available",
     prepTime: 4,
     playTime: 15,
-    columns: 7,
+    columns: 8,
     rows: 4,
   },
   {
@@ -82,10 +82,11 @@ const opposite: Record<Direction, Direction> = {
 
 export function createHackRound(game: HackGameDefinition): HackRound {
   const total = game.columns * game.rows;
+  const { start, target } = chooseEndpoints(game.columns, game.rows);
   const solutions = Array.from({ length: total }, () => emptyConnections());
 
   // The original minigame uses only two-sided straight and corner pieces.
-  const path = createRoutePath(game.columns, game.rows);
+  const path = createRoutePath(game.columns, game.rows, start, target);
   for (let index = 0; index < path.length - 1; index += 1) {
     const from = path[index];
     const to = path[index + 1];
@@ -116,8 +117,8 @@ export function createHackRound(game: HackGameDefinition): HackRound {
     tiles,
     columns: game.columns,
     rows: game.rows,
-    sourceIndex: 0,
-    targetIndex: total - 1,
+    sourceIndex: start,
+    targetIndex: target,
     timeLimit: game.playTime,
   };
 }
@@ -172,19 +173,23 @@ export function isRoundSolved(round: HackRound): boolean {
   return getConnectedTiles(round).has(round.targetIndex);
 }
 
-function createRoutePath(columns: number, rows: number) {
+function createRoutePath(columns: number, rows: number, start: number, target: number) {
   const total = columns * rows;
-  const target = total - 1;
-  const minimumLength = Math.min(total, columns + rows - 1 + Math.floor(Math.random() * 7));
+  const startRow = Math.floor(start / columns);
+  const startColumn = start % columns;
+  const targetRow = Math.floor(target / columns);
+  const targetColumn = target % columns;
+  const directLength = Math.abs(targetRow - startRow) + Math.abs(targetColumn - startColumn) + 1;
+  const minimumLength = Math.min(total, directLength + Math.floor(Math.random() * 7));
   const maximumLength = Math.max(minimumLength + 1, Math.floor(total * 0.8));
 
   for (let attempt = 0; attempt < 30; attempt += 1) {
-    const path = [0];
+    const path = [start];
     const visited = new Set(path);
     if (searchRoute(path, visited, target, columns, rows, minimumLength, maximumLength)) return path;
   }
 
-  return createFallbackRoute(columns, rows);
+  return createFallbackRoute(columns, start, target);
 }
 
 function searchRoute(
@@ -201,7 +206,12 @@ function searchRoute(
 
   const current = path[path.length - 1];
   const candidates = getNeighbours(current, columns, rows)
-    .filter((index) => !visited.has(index) && (index !== target || path.length + 1 >= minimumLength))
+    .filter((index) => {
+      if (visited.has(index)) return false;
+      if (path.length === 1 && !isStartMove(current, index, columns)) return false;
+      if (index !== target) return true;
+      return path.length + 1 >= minimumLength && isTargetEntry(current, target, columns);
+    })
     .sort((left, right) => {
       const leftOptions = getNeighbours(left, columns, rows).filter((index) => !visited.has(index)).length;
       const rightOptions = getNeighbours(right, columns, rows).filter((index) => !visited.has(index)).length;
@@ -231,11 +241,47 @@ function getNeighbours(index: number, columns: number, rows: number) {
   });
 }
 
-function createFallbackRoute(columns: number, rows: number) {
+function createFallbackRoute(columns: number, start: number, target: number) {
+  const startRow = Math.floor(start / columns);
+  const startColumn = start % columns;
+  const targetRow = Math.floor(target / columns);
+  const targetColumn = target % columns;
   const path: number[] = [];
-  for (let column = 0; column < columns; column += 1) path.push(column);
-  for (let row = 1; row < rows; row += 1) path.push(row * columns + columns - 1);
+  for (let column = startColumn; column <= targetColumn; column += 1) {
+    path.push(startRow * columns + column);
+  }
+  for (let row = startRow + 1; row <= targetRow; row += 1) {
+    path.push(row * columns + targetColumn);
+  }
   return path;
+}
+
+function chooseEndpoints(columns: number, rows: number) {
+  const startRow = Math.floor(Math.random() * (rows - 1));
+  const startColumn = Math.floor(Math.random() * (columns - 1));
+  const targetRow = startRow + 1 + Math.floor(Math.random() * (rows - startRow - 1));
+  const targetColumn = startColumn + 1 + Math.floor(Math.random() * (columns - startColumn - 1));
+  return {
+    start: startRow * columns + startColumn,
+    target: targetRow * columns + targetColumn,
+  };
+}
+
+function isStartMove(from: number, to: number, columns: number) {
+  const fromRow = Math.floor(from / columns);
+  const fromColumn = from % columns;
+  const toRow = Math.floor(to / columns);
+  const toColumn = to % columns;
+  return (toRow === fromRow && toColumn === fromColumn + 1) || (toColumn === fromColumn && toRow === fromRow + 1);
+}
+
+function isTargetEntry(from: number, target: number, columns: number) {
+  const fromRow = Math.floor(from / columns);
+  const fromColumn = from % columns;
+  const targetRow = Math.floor(target / columns);
+  const targetColumn = target % columns;
+  return (fromRow === targetRow && fromColumn === targetColumn - 1) ||
+    (fromColumn === targetColumn && fromRow === targetRow - 1);
 }
 
 function directionBetween(from: number, to: number, columns: number): Direction {
