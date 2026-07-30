@@ -85,7 +85,7 @@ export function createHackRound(game: HackGameDefinition): HackRound {
   const solutions = Array.from({ length: total }, () => emptyConnections());
 
   // The original minigame uses only two-sided straight and corner pieces.
-  const path = createHamiltonianPath(game.columns, game.rows);
+  const path = createRoutePath(game.columns, game.rows);
   for (let index = 0; index < path.length - 1; index += 1) {
     const from = path[index];
     const to = path[index + 1];
@@ -97,6 +97,11 @@ export function createHackRound(game: HackGameDefinition): HackRound {
   // The source and finish each use an outside connection plus the board route.
   solutions[path[0]].left = true;
   solutions[path[path.length - 1]].right = true;
+
+  const routeTiles = new Set(path);
+  solutions.forEach((solution, index) => {
+    if (!routeTiles.has(index)) Object.assign(solution, createDecoyConnections());
+  });
 
   const tiles = solutions.map((solution, index) => ({
     index,
@@ -167,32 +172,36 @@ export function isRoundSolved(round: HackRound): boolean {
   return getConnectedTiles(round).has(round.targetIndex);
 }
 
-function createHamiltonianPath(columns: number, rows: number) {
+function createRoutePath(columns: number, rows: number) {
   const total = columns * rows;
   const target = total - 1;
+  const minimumLength = Math.min(total, columns + rows - 1 + Math.floor(Math.random() * 7));
+  const maximumLength = Math.max(minimumLength + 1, Math.floor(total * 0.8));
 
   for (let attempt = 0; attempt < 30; attempt += 1) {
     const path = [0];
     const visited = new Set(path);
-    if (searchPath(path, visited, target, columns, rows)) return path;
+    if (searchRoute(path, visited, target, columns, rows, minimumLength, maximumLength)) return path;
   }
 
-  // The fallback keeps the game playable if a random search ever exhausts its attempts.
-  return createFallbackSnakePath(columns, rows);
+  return createFallbackRoute(columns, rows);
 }
 
-function searchPath(
+function searchRoute(
   path: number[],
   visited: Set<number>,
   target: number,
   columns: number,
   rows: number,
+  minimumLength: number,
+  maximumLength: number,
 ) {
-  if (path.length === columns * rows) return path[path.length - 1] === target;
+  if (path[path.length - 1] === target) return path.length >= minimumLength;
+  if (path.length >= maximumLength) return false;
 
   const current = path[path.length - 1];
   const candidates = getNeighbours(current, columns, rows)
-    .filter((index) => !visited.has(index) && (index !== target || path.length === columns * rows - 1))
+    .filter((index) => !visited.has(index) && (index !== target || path.length + 1 >= minimumLength))
     .sort((left, right) => {
       const leftOptions = getNeighbours(left, columns, rows).filter((index) => !visited.has(index)).length;
       const rightOptions = getNeighbours(right, columns, rows).filter((index) => !visited.has(index)).length;
@@ -202,7 +211,7 @@ function searchPath(
   for (const next of candidates) {
     path.push(next);
     visited.add(next);
-    if (searchPath(path, visited, target, columns, rows)) return true;
+    if (searchRoute(path, visited, target, columns, rows, minimumLength, maximumLength)) return true;
     visited.delete(next);
     path.pop();
   }
@@ -222,14 +231,10 @@ function getNeighbours(index: number, columns: number, rows: number) {
   });
 }
 
-function createFallbackSnakePath(columns: number, rows: number) {
+function createFallbackRoute(columns: number, rows: number) {
   const path: number[] = [];
-  for (let row = 0; row < rows; row += 1) {
-    const start = row % 2 === 0 ? 0 : columns - 1;
-    const end = row % 2 === 0 ? columns : -1;
-    const step = row % 2 === 0 ? 1 : -1;
-    for (let column = start; column !== end; column += step) path.push(row * columns + column);
-  }
+  for (let column = 0; column < columns; column += 1) path.push(column);
+  for (let row = 1; row < rows; row += 1) path.push(row * columns + columns - 1);
   return path;
 }
 
@@ -245,6 +250,18 @@ function directionBetween(from: number, to: number, columns: number): Direction 
 
 function emptyConnections(): Connections {
   return { up: false, right: false, down: false, left: false };
+}
+
+function createDecoyConnections(): Connections {
+  const shapes: Connections[] = [
+    { up: true, right: false, down: true, left: false },
+    { up: false, right: true, down: false, left: true },
+    { up: true, right: true, down: false, left: false },
+    { up: false, right: true, down: true, left: false },
+    { up: false, right: false, down: true, left: true },
+    { up: true, right: false, down: false, left: true },
+  ];
+  return { ...shapes[Math.floor(Math.random() * shapes.length)] };
 }
 
 function randomRotation() {
