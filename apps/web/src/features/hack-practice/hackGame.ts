@@ -85,7 +85,7 @@ export function createHackRound(game: HackGameDefinition): HackRound {
   const solutions = Array.from({ length: total }, () => emptyConnections());
 
   // The original minigame uses only two-sided straight and corner pieces.
-  const path = createSnakePath(game.columns, game.rows);
+  const path = createHamiltonianPath(game.columns, game.rows);
   for (let index = 0; index < path.length - 1; index += 1) {
     const from = path[index];
     const to = path[index + 1];
@@ -167,14 +167,68 @@ export function isRoundSolved(round: HackRound): boolean {
   return getConnectedTiles(round).has(round.targetIndex);
 }
 
-function createSnakePath(columns: number, rows: number) {
+function createHamiltonianPath(columns: number, rows: number) {
+  const total = columns * rows;
+  const target = total - 1;
+
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const path = [0];
+    const visited = new Set(path);
+    if (searchPath(path, visited, target, columns, rows)) return path;
+  }
+
+  // The fallback keeps the game playable if a random search ever exhausts its attempts.
+  return createFallbackSnakePath(columns, rows);
+}
+
+function searchPath(
+  path: number[],
+  visited: Set<number>,
+  target: number,
+  columns: number,
+  rows: number,
+) {
+  if (path.length === columns * rows) return path[path.length - 1] === target;
+
+  const current = path[path.length - 1];
+  const candidates = getNeighbours(current, columns, rows)
+    .filter((index) => !visited.has(index) && (index !== target || path.length === columns * rows - 1))
+    .sort((left, right) => {
+      const leftOptions = getNeighbours(left, columns, rows).filter((index) => !visited.has(index)).length;
+      const rightOptions = getNeighbours(right, columns, rows).filter((index) => !visited.has(index)).length;
+      return leftOptions - rightOptions || Math.random() - 0.5;
+    });
+
+  for (const next of candidates) {
+    path.push(next);
+    visited.add(next);
+    if (searchPath(path, visited, target, columns, rows)) return true;
+    visited.delete(next);
+    path.pop();
+  }
+  return false;
+}
+
+function getNeighbours(index: number, columns: number, rows: number) {
+  const row = Math.floor(index / columns);
+  const column = index % columns;
+  return shuffle(directions).flatMap((direction) => {
+    const [rowOffset, columnOffset] = offsets[direction];
+    const nextRow = row + rowOffset;
+    const nextColumn = column + columnOffset;
+    return nextRow >= 0 && nextRow < rows && nextColumn >= 0 && nextColumn < columns
+      ? [nextRow * columns + nextColumn]
+      : [];
+  });
+}
+
+function createFallbackSnakePath(columns: number, rows: number) {
   const path: number[] = [];
   for (let row = 0; row < rows; row += 1) {
-    if (row % 2 === 0) {
-      for (let column = 0; column < columns; column += 1) path.push(row * columns + column);
-    } else {
-      for (let column = columns - 1; column >= 0; column -= 1) path.push(row * columns + column);
-    }
+    const start = row % 2 === 0 ? 0 : columns - 1;
+    const end = row % 2 === 0 ? columns : -1;
+    const step = row % 2 === 0 ? 1 : -1;
+    for (let column = start; column !== end; column += step) path.push(row * columns + column);
   }
   return path;
 }
@@ -195,4 +249,13 @@ function emptyConnections(): Connections {
 
 function randomRotation() {
   return Math.floor(Math.random() * 4);
+}
+
+function shuffle<T>(items: T[]) {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
 }
