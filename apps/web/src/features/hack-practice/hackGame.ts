@@ -2,14 +2,17 @@ export type Direction = "up" | "right" | "down" | "left";
 
 export type Connections = Record<Direction, boolean>;
 
-export type HackDifficulty = "rookie" | "operator" | "elite";
+export type HackGameId = "atm-bomb" | "fleeca-bypass" | "thermite-charge";
 
-export type HackDifficultyConfig = {
-  label: string;
+export type HackGameDefinition = {
+  id: HackGameId;
+  name: string;
   description: string;
+  status: "available" | "coming-soon";
+  prepTime: number;
+  playTime: number;
   columns: number;
   rows: number;
-  timeLimit: number;
 };
 
 export type HackTile = {
@@ -21,6 +24,7 @@ export type HackTile = {
 };
 
 export type HackRound = {
+  gameId: HackGameId;
   tiles: HackTile[];
   columns: number;
   rows: number;
@@ -29,29 +33,38 @@ export type HackRound = {
   timeLimit: number;
 };
 
-export const hackDifficulties: Record<HackDifficulty, HackDifficultyConfig> = {
-  rookie: {
-    label: "Rookie",
-    description: "A smaller board with more time to learn the route.",
-    columns: 6,
-    rows: 4,
-    timeLimit: 75,
-  },
-  operator: {
-    label: "Operator",
-    description: "The standard ATM explosive practice board.",
+export const hackGames: HackGameDefinition[] = [
+  {
+    id: "atm-bomb",
+    name: "ATM Bomb Hack Practice",
+    description: "Rig Explosive pipe-connection practice.",
+    status: "available",
+    prepTime: 4,
+    playTime: 15,
     columns: 7,
     rows: 5,
-    timeLimit: 60,
   },
-  elite: {
-    label: "Elite",
-    description: "A larger board with a short connection window.",
+  {
+    id: "fleeca-bypass",
+    name: "Fleeca Vault Bypass",
+    description: "A future vault-terminal practice game.",
+    status: "coming-soon",
+    prepTime: 0,
+    playTime: 0,
+    columns: 7,
+    rows: 5,
+  },
+  {
+    id: "thermite-charge",
+    name: "Thermite Charge Practice",
+    description: "A future thermite timing challenge.",
+    status: "coming-soon",
+    prepTime: 0,
+    playTime: 0,
     columns: 8,
     rows: 6,
-    timeLimit: 50,
   },
-};
+];
 
 const directions: Direction[] = ["up", "right", "down", "left"];
 const offsets: Record<Direction, [number, number]> = {
@@ -67,10 +80,9 @@ const opposite: Record<Direction, Direction> = {
   left: "right",
 };
 
-export function createHackRound(difficulty: HackDifficulty): HackRound {
-  const config = hackDifficulties[difficulty];
-  const total = config.columns * config.rows;
-  const edges = createSpanningTree(config.columns, config.rows);
+export function createHackRound(game: HackGameDefinition): HackRound {
+  const total = game.columns * game.rows;
+  const edges = createSpanningTree(game.columns, game.rows);
   const solutions = Array.from({ length: total }, () => emptyConnections());
 
   for (const [from, to, direction] of edges) {
@@ -80,19 +92,20 @@ export function createHackRound(difficulty: HackDifficulty): HackRound {
 
   const tiles = solutions.map((solution, index) => ({
     index,
-    row: Math.floor(index / config.columns),
-    column: index % config.columns,
+    row: Math.floor(index / game.columns),
+    column: index % game.columns,
     solution,
     rotation: randomRotation(),
   }));
 
   return {
+    gameId: game.id,
     tiles,
-    columns: config.columns,
-    rows: config.rows,
+    columns: game.columns,
+    rows: game.rows,
     sourceIndex: 0,
     targetIndex: total - 1,
-    timeLimit: config.timeLimit,
+    timeLimit: game.playTime,
   };
 }
 

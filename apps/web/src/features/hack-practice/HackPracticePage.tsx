@@ -4,54 +4,68 @@ import {
   createHackRound,
   getConnectedTiles,
   getTileConnections,
-  hackDifficulties,
+  hackGames,
   isRoundSolved,
   rotateTile,
-  type HackDifficulty,
+  type HackGameId,
   type HackRound,
   type HackTile,
 } from "./hackGame";
 
-type GameStatus = "ready" | "playing" | "success" | "failed";
+type GameStatus = "ready" | "preparing" | "playing" | "success" | "failed";
 
 export function HackPracticePage() {
-  const [difficulty, setDifficulty] = useState<HackDifficulty>("operator");
+  const [selectedGameId, setSelectedGameId] = useState<HackGameId>("atm-bomb");
   const [round, setRound] = useState<HackRound | null>(null);
   const [status, setStatus] = useState<GameStatus>("ready");
+  const [prepRemaining, setPrepRemaining] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [moves, setMoves] = useState(0);
   const [bestMoves, setBestMoves] = useState<number | null>(null);
   const [streak, setStreak] = useState(0);
-  const [message, setMessage] = useState("Rotate the pipes and connect them to the finish tile.");
+  const [message, setMessage] = useState("Choose a game to begin.");
 
-  const config = hackDifficulties[difficulty];
+  const selectedGame = hackGames.find((game) => game.id === selectedGameId) ?? hackGames[0];
   const connectedTiles = useMemo(
     () => (round ? getConnectedTiles(round) : new Set<number>()),
     [round],
   );
 
   const startRound = useCallback(() => {
-    const nextRound = createHackRound(difficulty);
+    if (selectedGame.status !== "available") return;
+    const nextRound = createHackRound(selectedGame);
     setRound(nextRound);
-    setStatus("playing");
-    setTimeRemaining(nextRound.timeLimit);
+    setStatus("preparing");
+    setPrepRemaining(selectedGame.prepTime);
+    setTimeRemaining(selectedGame.playTime);
     setMoves(0);
-    setMessage("Rotate the pipes and connect them to the finish tile.");
-  }, [difficulty]);
+    setMessage("Prepare the rig. The connection window starts shortly.");
+  }, [selectedGame]);
 
   useEffect(() => {
-    if (status !== "playing") return;
+    if (status !== "preparing" && status !== "playing") return;
 
     const timer = window.setInterval(() => {
-      setTimeRemaining((current) => {
-        if (current <= 1) {
-          setStatus("failed");
-          setStreak(0);
-          setMessage("The explosive rig timed out. Start another board to try again.");
-          return 0;
-        }
-        return current - 1;
-      });
+      if (status === "preparing") {
+        setPrepRemaining((current) => {
+          if (current <= 1) {
+            setStatus("playing");
+            setMessage("Connection live. Complete the route before the timer expires.");
+            return 0;
+          }
+          return current - 1;
+        });
+      } else {
+        setTimeRemaining((current) => {
+          if (current <= 1) {
+            setStatus("failed");
+            setStreak(0);
+            setMessage("The explosive rig timed out. Start another board to try again.");
+            return 0;
+          }
+          return current - 1;
+        });
+      }
     }, 1000);
 
     return () => window.clearInterval(timer);
@@ -76,16 +90,22 @@ export function HackPracticePage() {
     }
   }
 
-  function changeDifficulty(nextDifficulty: HackDifficulty) {
-    setDifficulty(nextDifficulty);
+  function selectGame(nextGameId: HackGameId) {
+    setSelectedGameId(nextGameId);
     setRound(null);
     setStatus("ready");
+    setPrepRemaining(0);
     setTimeRemaining(0);
     setMoves(0);
-    setMessage("Choose start when you are ready to rig the explosive.");
+    const nextGame = hackGames.find((game) => game.id === nextGameId);
+    setMessage(nextGame?.status === "available" ? "Choose start when you are ready." : "This hack game is coming soon.");
   }
 
-  const progress = round ? (timeRemaining / round.timeLimit) * 100 : 0;
+  const progress = status === "preparing"
+    ? (prepRemaining / selectedGame.prepTime) * 100
+    : round
+      ? (timeRemaining / round.timeLimit) * 100
+      : 0;
 
   return (
     <main className="hack-page">
@@ -109,21 +129,22 @@ export function HackPracticePage() {
       <section className="hack-layout">
         <aside className="hack-sidebar">
           <div className="hack-panel-heading">
-            <span>Practice setup</span>
+            <span>Hack games</span>
             <small>LOCAL SESSION</small>
           </div>
-          <div className="hack-difficulty-list" role="radiogroup" aria-label="Hack difficulty">
-            {(Object.entries(hackDifficulties) as [HackDifficulty, (typeof hackDifficulties)[HackDifficulty]][]).map(([id, option]) => (
+          <div className="hack-game-list" role="radiogroup" aria-label="Hack games">
+            {hackGames.map((game) => (
               <button
-                key={id}
+                key={game.id}
                 type="button"
                 role="radio"
-                aria-checked={difficulty === id}
-                className={difficulty === id ? "active" : ""}
-                onClick={() => changeDifficulty(id)}
+                aria-checked={selectedGameId === game.id}
+                className={`${selectedGameId === game.id ? "active" : ""}${game.status === "coming-soon" ? " coming-soon" : ""}`}
+                onClick={() => selectGame(game.id)}
               >
-                <strong>{option.label}</strong>
-                <small>{option.description}</small>
+                <strong>{game.name}</strong>
+                <small>{game.description}</small>
+                {game.status === "coming-soon" && <em>COMING SOON</em>}
               </button>
             ))}
           </div>
@@ -131,10 +152,11 @@ export function HackPracticePage() {
             <Stat label="Best moves" value={bestMoves === null ? "—" : bestMoves.toString()} />
             <Stat label="Current streak" value={streak.toString()} />
             <Stat label="Moves" value={moves.toString()} />
-            <Stat label="Time limit" value={`${config.timeLimit}s`} />
+            <Stat label="Prep time" value={`${selectedGame.prepTime}s`} />
+            <Stat label="Play time" value={`${selectedGame.playTime}s`} />
           </div>
-          <button type="button" className="hack-start-button" onClick={startRound}>
-            {status === "playing" ? "Reset board" : "Start hack"}
+          <button type="button" className="hack-start-button" onClick={startRound} disabled={selectedGame.status !== "available"}>
+            {status === "playing" || status === "preparing" ? "Reset board" : "Start hack"}
           </button>
           <p className="hack-help">
             Click a tile to rotate its pipe clockwise. Build one connected route from the green source to the finish square before the bar runs out.
@@ -145,12 +167,14 @@ export function HackPracticePage() {
           <div className="hack-game-window">
             <div className="hack-board-header">
               <span className="hack-game-title">Rig Explosive</span>
-              <span className="hack-window-state">{status === "playing" ? "CONNECTION ACTIVE" : "STANDBY"}</span>
+              <span className="hack-window-state">{status === "preparing" ? "PREPARE" : status === "playing" ? "CONNECTION ACTIVE" : "STANDBY"}</span>
             </div>
+
+            {status === "preparing" && <div className="hack-prep-countdown">{prepRemaining}</div>}
 
             <div
               className="hack-pipe-board"
-              style={{ gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))` }}
+              style={{ gridTemplateColumns: `repeat(${selectedGame.columns}, minmax(0, 1fr))` }}
               aria-label="Pipe connection board"
             >
               {round?.tiles.map((tile) => (
@@ -221,6 +245,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 function statusLabel(status: GameStatus) {
   return {
     ready: "Stand by",
+    preparing: "Prepare the rig",
     playing: "Connection live",
     success: "Access granted",
     failed: "Connection lost",

@@ -22,17 +22,20 @@
 .hack-sidebar { display: grid; gap: 18px; padding: 16px; }
 .hack-panel-heading { display: flex; justify-content: space-between; gap: 8px; color: #d7dde3; }
 .hack-panel-heading small, .hack-window-state { color: #6f7b88; font: 600 10px "Space Grotesk", sans-serif; letter-spacing: .1em; }
-.hack-difficulty-list { display: grid; gap: 6px; }
-.hack-difficulty-list button { display: grid; gap: 4px; padding: 11px; border: 1px solid #222b34; border-radius: 8px; color: #aeb9c4; background: #0d1218; text-align: left; cursor: pointer; }
-.hack-difficulty-list button:hover, .hack-difficulty-list button.active { border-color: #527c22; color: #ecffd5; background: #26391a; }
-.hack-difficulty-list small { color: #6f7b88; font-size: 10px; line-height: 1.45; }
-.hack-difficulty-list button.active small { color: #b0d87b; }
+.hack-game-list { display: grid; gap: 6px; }
+.hack-game-list button { position: relative; display: grid; gap: 4px; padding: 11px; border: 1px solid #222b34; border-radius: 8px; color: #aeb9c4; background: #0d1218; text-align: left; cursor: pointer; }
+.hack-game-list button:hover, .hack-game-list button.active { border-color: #527c22; color: #ecffd5; background: #26391a; }
+.hack-game-list button:disabled { cursor: default; }
+.hack-game-list small { color: #6f7b88; font-size: 10px; line-height: 1.45; }
+.hack-game-list button.active small { color: #b0d87b; }
+.hack-game-list em { color: #8f9891; font-size: 9px; font-style: normal; letter-spacing: .08em; }
 .hack-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .hack-stat { display: grid; gap: 4px; padding: 10px; border: 1px solid #222b34; border-radius: 7px; background: #0d1218; }
 .hack-stat small { color: #6f7b88; font-size: 10px; }
 .hack-stat strong { color: #d7dde3; font: 600 17px "Space Grotesk", sans-serif; }
 .hack-start-button { min-height: 44px; border: 0; border-radius: 8px; color: #101705; background: #9df21d; font-weight: 700; cursor: pointer; }
 .hack-start-button:hover { background: #b4fa49; }
+.hack-start-button:disabled { cursor: not-allowed; opacity: .45; }
 .hack-help { margin: 0; color: #65717d; font-size: 11px; line-height: 1.55; }
 
 .hack-board-panel { min-height: 560px; padding: 20px; background: radial-gradient(circle at 50% 0%, #414a34, #151b1b 50%, #10161d 100%); }
@@ -40,6 +43,7 @@
 .hack-board-header { display: flex; justify-content: center; align-items: center; position: relative; min-height: 50px; }
 .hack-game-title { color: #f2f2ee; font: 400 clamp(25px, 4vw, 40px) "Arial Narrow", "Space Grotesk", sans-serif; letter-spacing: -.03em; }
 .hack-window-state { position: absolute; right: 0; top: 10px; }
+.hack-prep-countdown { position: absolute; z-index: 2; display: grid; place-items: center; inset: 0; color: #9df21d; font: 700 clamp(48px, 10vw, 94px) "Space Grotesk", sans-serif; text-shadow: 0 0 25px #9df21d; pointer-events: none; }
 .hack-pipe-board { display: grid; gap: 2px; margin-top: 16px; border: 1px solid #363b36; background: #20231f99; }
 .hack-pipe-tile { position: relative; display: grid; place-items: center; aspect-ratio: 1.05; min-width: 0; padding: 0; border: 1px solid #363b36aa; background: #20231f55; cursor: pointer; transition: background .15s, border-color .15s; }
 .hack-pipe-tile:hover:not(:disabled) { border-color: #9df21d99; background: #667b2726; }
