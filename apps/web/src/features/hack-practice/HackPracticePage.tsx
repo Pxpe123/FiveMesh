@@ -18,6 +18,7 @@ export function HackPracticePage() {
   const [selectedGameId, setSelectedGameId] = useState<HackGameId>("atm-bomb");
   const [round, setRound] = useState<HackRound | null>(null);
   const [status, setStatus] = useState<GameStatus>("ready");
+  const [showSolution, setShowSolution] = useState(false);
   const [prepRemaining, setPrepRemaining] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [moves, setMoves] = useState(0);
@@ -26,9 +27,14 @@ export function HackPracticePage() {
   const [message, setMessage] = useState("Choose a game to begin.");
 
   const selectedGame = hackGames.find((game) => game.id === selectedGameId) ?? hackGames[0];
-  const connectedTiles = useMemo(
-    () => (round ? getConnectedTiles(round) : new Set<number>()),
+  const solvedRound = useMemo(
+    () => round ? { ...round, tiles: round.tiles.map((tile) => ({ ...tile, rotation: 0 })) } : null,
     [round],
+  );
+  const visibleRound = showSolution ? solvedRound : round;
+  const connectedTiles = useMemo(
+    () => (visibleRound ? getConnectedTiles(visibleRound) : new Set<number>()),
+    [visibleRound],
   );
 
   const startRound = useCallback(() => {
@@ -36,6 +42,7 @@ export function HackPracticePage() {
     const nextRound = createHackRound(selectedGame);
     setRound(nextRound);
     setStatus("preparing");
+    setShowSolution(false);
     setPrepRemaining(selectedGame.prepTime);
     setTimeRemaining(selectedGame.playTime);
     setMoves(0);
@@ -72,7 +79,7 @@ export function HackPracticePage() {
   }, [status]);
 
   function handleTileClick(index: number) {
-    if (status !== "playing" || !round) return;
+    if (status !== "playing" || !round || showSolution) return;
 
     const nextRound: HackRound = {
       ...round,
@@ -90,10 +97,20 @@ export function HackPracticePage() {
     }
   }
 
+  function revealSolution() {
+    if (!round) return;
+    setShowSolution(true);
+    setStatus("success");
+    setPrepRemaining(0);
+    setTimeRemaining(0);
+    setMessage("Solution shown. Start another board to practise this route.");
+  }
+
   function selectGame(nextGameId: HackGameId) {
     setSelectedGameId(nextGameId);
     setRound(null);
     setStatus("ready");
+    setShowSolution(false);
     setPrepRemaining(0);
     setTimeRemaining(0);
     setMoves(0);
@@ -158,6 +175,9 @@ export function HackPracticePage() {
           <button type="button" className="hack-start-button" onClick={startRound} disabled={selectedGame.status !== "available"}>
             {status === "playing" || status === "preparing" ? "Reset board" : "Start hack"}
           </button>
+          <button type="button" className="hack-solution-button" onClick={revealSolution} disabled={!round || showSolution}>
+            {showSolution ? "Solution shown" : "Show solution"}
+          </button>
           <p className="hack-help">
             Click a tile to rotate its pipe clockwise. Build one connected route from the green source to the finish square before the bar runs out.
           </p>
@@ -177,14 +197,14 @@ export function HackPracticePage() {
               style={{ gridTemplateColumns: `repeat(${selectedGame.columns}, minmax(0, 1fr))` }}
               aria-label="Pipe connection board"
             >
-              {round?.tiles.map((tile) => (
+              {visibleRound?.tiles.map((tile) => (
                 <PipeTile
                   key={tile.index}
                   tile={tile}
                   connected={connectedTiles.has(tile.index)}
-                  source={tile.index === round.sourceIndex}
-                  target={tile.index === round.targetIndex}
-                  disabled={status !== "playing"}
+                  source={tile.index === visibleRound.sourceIndex}
+                  target={tile.index === visibleRound.targetIndex}
+                  disabled={status !== "playing" || showSolution}
                   onClick={() => handleTileClick(tile.index)}
                 />
               )) ?? <div className="hack-board-placeholder">Press start hack to initialise the board.</div>}

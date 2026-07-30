@@ -36,6 +36,9 @@
 .hack-start-button { min-height: 44px; border: 0; border-radius: 8px; color: #101705; background: #9df21d; font-weight: 700; cursor: pointer; }
 .hack-start-button:hover { background: #b4fa49; }
 .hack-start-button:disabled { cursor: not-allowed; opacity: .45; }
+.hack-solution-button { min-height: 38px; border: 1px solid #4c5a4b; border-radius: 8px; color: #b7c5b5; background: #172019; font-weight: 600; cursor: pointer; }
+.hack-solution-button:hover:not(:disabled) { border-color: #9df21d; color: #ecffd5; background: #26391a; }
+.hack-solution-button:disabled { cursor: default; opacity: .45; }
 .hack-help { margin: 0; color: #65717d; font-size: 11px; line-height: 1.55; }
 
 .hack-board-panel { min-height: 560px; padding: 20px; background: radial-gradient(circle at 50% 0%, #414a34, #151b1b 50%, #10161d 100%); }
