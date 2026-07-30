@@ -40,7 +40,7 @@ export const hackGames: HackGameDefinition[] = [
     description: "Rig Explosive pipe-connection practice.",
     status: "available",
     prepTime: 4,
-    playTime: 0,
+    playTime: 15,
     columns: 8,
     rows: 4,
   },
