@@ -71,6 +71,7 @@
 .store-dial::after { position: absolute; content: ""; inset: 29px; border: 2px solid #292f38; border-radius: 50%; }
 .store-target-arc { position: absolute; inset: 17px; border: 9px solid transparent; border-top-color: #aaa7ff; border-right-color: #aaa7ff; border-radius: 50%; filter: drop-shadow(0 0 8px #7e7bff); pointer-events: none; }
 .store-marker { position: absolute; z-index: 2; top: calc(50% - 9px); left: calc(50% - 9px); width: 18px; height: 18px; border: 2px solid #fff; border-radius: 2px; background: #9b98ff; box-shadow: 0 0 9px #a39fff, 0 0 0 3px #191d27; pointer-events: none; }
+.store-solution-point { position: absolute; z-index: 3; top: calc(50% - 7px); left: calc(50% - 7px); width: 14px; height: 14px; border: 2px solid #fffbd0; border-radius: 2px; background: #ffd84a; box-shadow: 0 0 13px #ffd84a, 0 0 0 3px #302b12; pointer-events: none; }
 .store-dial-core { position: absolute; top: 50%; left: 50%; width: 29%; aspect-ratio: 1; border: 1px solid #424b58; border-radius: 50%; background: radial-gradient(circle, #9a97f5 0 8%, #3c3c68 9% 17%, #171b26 18% 100%); transform: translate(-50%, -50%); box-shadow: 0 0 22px #817eff55; pointer-events: none; }
 .store-cycle-label { color: #b8b6ff; font: 600 12px "Space Grotesk", sans-serif; letter-spacing: .12em; text-transform: uppercase; }
 .store-lock-button { min-height: 40px; padding: 0 18px; border: 1px solid #8c89df; border-radius: 7px; color: #eeeefe; background: #29294d; font-weight: 700; cursor: pointer; }

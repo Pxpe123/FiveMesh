@@ -12,6 +12,7 @@ export function StoreCashRegisterPractice({
   onSelectGame: (gameId: HackGameId) => void;
 }) {
   const [status, setStatus] = useState<StoreStatus>("ready");
+  const [showSolution, setShowSolution] = useState(false);
   const [cycle, setCycle] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(15);
   const [markerAngle, setMarkerAngle] = useState(0);
@@ -48,6 +49,7 @@ export function StoreCashRegisterPractice({
 
   function startGame() {
     setStatus("playing");
+    setShowSolution(false);
     setCycle(0);
     setTimeRemaining(15);
     setMarkerAngle(0);
@@ -64,7 +66,7 @@ export function StoreCashRegisterPractice({
   }
 
   function lockPoint() {
-    if (status !== "playing") return;
+    if (status !== "playing" || showSolution) return;
     if (!isAngleInTarget(markerAngle, targetAngle)) {
       setMessage("Not quite. Keep moving the square around the ring.");
       setTimeRemaining((current) => Math.max(0, current - 1));
@@ -81,6 +83,12 @@ export function StoreCashRegisterPractice({
     setCycle((current) => current + 1);
     setTargetAngle(randomAngle());
     setMessage("Good hit. Find the second target point.");
+  }
+
+  function revealSolution() {
+    setShowSolution(true);
+    setStatus("success");
+    setMessage("Solution shown. The square must be centred on the highlighted unlock point.");
   }
 
   const progress = (timeRemaining / 15) * 100;
@@ -131,6 +139,9 @@ export function StoreCashRegisterPractice({
           <button type="button" className="hack-start-button" onClick={startGame}>
             {status === "playing" ? "Reset register" : "Start register hack"}
           </button>
+          <button type="button" className="hack-solution-button" onClick={revealSolution} disabled={showSolution}>
+            {showSolution ? "Solution shown" : "Show solution"}
+          </button>
           <p className="hack-help">Drag or click around the dial, or use A/D and the arrow keys. Lock in when the square sits over the purple target.</p>
         </aside>
 
@@ -161,6 +172,7 @@ export function StoreCashRegisterPractice({
                 tabIndex={0}
               >
                 <div className="store-target-arc" style={{ transform: `rotate(${targetAngle}deg)` }} />
+                {showSolution && <div className="store-solution-point" style={{ transform: `rotate(${targetAngle}deg) translateY(-112px)` }} />}
                 <div className="store-marker" style={{ transform: `rotate(${markerAngle}deg) translateY(-112px)` }} />
                 <div className="store-dial-core" />
               </div>
