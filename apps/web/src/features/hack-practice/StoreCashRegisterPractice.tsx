@@ -14,26 +14,11 @@ export function StoreCashRegisterPractice({
   const [status, setStatus] = useState<StoreStatus>("ready");
   const [showSolution, setShowSolution] = useState(false);
   const [cycle, setCycle] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(15);
   const [markerAngle, setMarkerAngle] = useState(0);
   const [targetAngle, setTargetAngle] = useState(randomAngle());
+  const [targetProgress, setTargetProgress] = useState(0);
   const [message, setMessage] = useState("Move the square around the ring and find the target point.");
   const dialRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (status !== "playing") return;
-    const timer = window.setInterval(() => {
-      setTimeRemaining((current) => {
-        if (current <= 1) {
-          setStatus("failed");
-          setMessage("The register lock timed out. Start another attempt to try again.");
-          return 0;
-        }
-        return current - 1;
-      });
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [status]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -47,13 +32,40 @@ export function StoreCashRegisterPractice({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [status]);
 
+  const hoveringTarget = isAngleInTarget(markerAngle, targetAngle);
+
+  useEffect(() => {
+    if (status !== "playing" || !hoveringTarget) {
+      setTargetProgress(0);
+      return;
+    }
+    const fillTimer = window.setInterval(() => {
+      setTargetProgress((current) => Math.min(100, current + 4));
+    }, 50);
+    return () => window.clearInterval(fillTimer);
+  }, [status, hoveringTarget, targetAngle]);
+
+  useEffect(() => {
+    if (status !== "playing" || targetProgress < 100) return;
+    if (cycle + 1 >= CYCLES) {
+      setCycle(CYCLES);
+      setStatus("success");
+      setMessage("Register unlocked. Cash drawer ready.");
+      return;
+    }
+    setCycle((current) => current + 1);
+    setTargetAngle(randomAngle());
+    setTargetProgress(0);
+    setMessage("Good hit. Find the second target point.");
+  }, [cycle, status, targetProgress]);
+
   function startGame() {
     setStatus("playing");
     setShowSolution(false);
     setCycle(0);
-    setTimeRemaining(15);
     setMarkerAngle(0);
     setTargetAngle(randomAngle());
+    setTargetProgress(0);
     setMessage("Slowly move the square until it lines up with the purple target.");
   }
 
@@ -65,33 +77,13 @@ export function StoreCashRegisterPractice({
     setMarkerAngle(normaliseAngle((Math.atan2(y, x) * 180) / Math.PI + 90));
   }
 
-  function lockPoint() {
-    if (status !== "playing" || showSolution) return;
-    if (!isAngleInTarget(markerAngle, targetAngle)) {
-      setMessage("Not quite. Keep moving the square around the ring.");
-      setTimeRemaining((current) => Math.max(0, current - 1));
-      return;
-    }
-
-    if (cycle + 1 >= CYCLES) {
-      setCycle(CYCLES);
-      setStatus("success");
-      setMessage("Register unlocked. Cash drawer ready.");
-      return;
-    }
-
-    setCycle((current) => current + 1);
-    setTargetAngle(randomAngle());
-    setMessage("Good hit. Find the second target point.");
-  }
-
   function revealSolution() {
     setShowSolution(true);
     setStatus("success");
+    setTargetProgress(100);
     setMessage("Solution shown. The square must be centred on the highlighted unlock point.");
   }
 
-  const progress = (timeRemaining / 15) * 100;
   const selectedGame = hackGames.find((game) => game.id === "store-cash");
 
   return (
@@ -132,7 +124,7 @@ export function StoreCashRegisterPractice({
           </div>
           <div className="hack-stat-grid">
             <Stat label="Cycles" value={`${cycle} / ${CYCLES}`} />
-            <Stat label="Time" value={`${timeRemaining}s`} />
+            <Stat label="Time" value="No limit" />
             <Stat label="Target" value={selectedGame?.name ?? "Store Cash"} />
             <Stat label="Method" value="Slow dial" />
           </div>
@@ -156,14 +148,8 @@ export function StoreCashRegisterPractice({
               <div
                 ref={dialRef}
                 className="store-dial"
-                onPointerDown={(event) => {
-                  dialRef.current?.setPointerCapture(event.pointerId);
-                  updateMarkerFromPointer(event);
-                }}
-                onPointerMove={(event) => {
-                  if (event.buttons > 0) updateMarkerFromPointer(event);
-                }}
-                onPointerUp={(event) => dialRef.current?.releasePointerCapture(event.pointerId)}
+                onPointerMove={updateMarkerFromPointer}
+                onPointerDown={updateMarkerFromPointer}
                 role="slider"
                 aria-label="Register lock position"
                 aria-valuenow={Math.round(markerAngle)}
@@ -174,14 +160,12 @@ export function StoreCashRegisterPractice({
                 <div className="store-target-arc" style={{ transform: `rotate(${targetAngle}deg)` }} />
                 {showSolution && <div className="store-solution-point" style={{ transform: `rotate(${targetAngle}deg) translateY(-112px)` }} />}
                 <div className="store-marker" style={{ transform: `rotate(${markerAngle}deg) translateY(-112px)` }} />
-                <div className="store-dial-core" />
+                <div className="store-dial-core"><span style={{ height: `${targetProgress}%` }} /></div>
               </div>
               <span className="store-cycle-label">Cycle {Math.min(cycle + 1, CYCLES)} / {CYCLES}</span>
-              <button type="button" className="store-lock-button" onClick={lockPoint} disabled={status !== "playing"}>Lock in point</button>
             </div>
 
-            <p className="hack-instruction">Slowly move the square around to find the correct point</p>
-            <div className="hack-time-bar" aria-label={`${timeRemaining} seconds remaining`}><span style={{ width: `${progress}%` }} /></div>
+            <p className="hack-instruction">Move the square around slowly and hover over the target until the inner circle fills</p>
           </div>
         </section>
       </section>
