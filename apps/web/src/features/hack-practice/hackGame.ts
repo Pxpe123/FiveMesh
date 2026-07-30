@@ -94,9 +94,9 @@ export function createHackRound(game: HackGameDefinition): HackRound {
     solutions[to][opposite[direction]] = true;
   }
 
-  // The source and finish each use an outside connection plus the board route.
-  solutions[path[0]].left = true;
-  solutions[path[path.length - 1]].right = true;
+  // The game always uses these fixed endpoint shapes.
+  solutions[path[0]] = { up: false, right: true, down: true, left: false };
+  solutions[path[path.length - 1]] = { up: true, right: false, down: false, left: true };
 
   const routeTiles = new Set(path);
   solutions.forEach((solution, index) => {
