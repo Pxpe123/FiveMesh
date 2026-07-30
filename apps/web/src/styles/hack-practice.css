@@ -49,8 +49,8 @@
 .hack-pipe-tile:hover:not(:disabled) { border-color: #9df21d99; background: #667b2726; }
 .hack-pipe-tile:disabled { cursor: default; }
 .hack-pipe-tile svg { width: 74%; height: 74%; overflow: visible; }
-.hack-pipe-tile line { stroke-width: 10; stroke-linecap: square; filter: drop-shadow(0 0 3px currentColor); }
-.hack-pipe-tile circle { filter: drop-shadow(0 0 4px #9df21d88); }
+.hack-pipe-tile line { stroke-width: 11; stroke-linecap: square; stroke-linejoin: miter; filter: drop-shadow(0 0 3px #ffffff26); }
+.hack-pipe-tile rect { filter: drop-shadow(0 0 3px #9df21d66); }
 .hack-pipe-tile.connected { background: #617a1c20; }
 .hack-pipe-tile.source { background: #708d272b; }
 .hack-pipe-tile.target { background: #38393466; }

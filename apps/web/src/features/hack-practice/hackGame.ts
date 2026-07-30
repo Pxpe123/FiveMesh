@@ -82,20 +82,28 @@ const opposite: Record<Direction, Direction> = {
 
 export function createHackRound(game: HackGameDefinition): HackRound {
   const total = game.columns * game.rows;
-  const edges = createSpanningTree(game.columns, game.rows);
   const solutions = Array.from({ length: total }, () => emptyConnections());
 
-  for (const [from, to, direction] of edges) {
+  // The original minigame uses only two-sided straight and corner pieces.
+  const path = createSnakePath(game.columns, game.rows);
+  for (let index = 0; index < path.length - 1; index += 1) {
+    const from = path[index];
+    const to = path[index + 1];
+    const direction = directionBetween(from, to, game.columns);
     solutions[from][direction] = true;
     solutions[to][opposite[direction]] = true;
   }
+
+  // The source and finish each use an outside connection plus the board route.
+  solutions[path[0]].left = true;
+  solutions[path[path.length - 1]].right = true;
 
   const tiles = solutions.map((solution, index) => ({
     index,
     row: Math.floor(index / game.columns),
     column: index % game.columns,
     solution,
-    rotation: randomRotation(),
+    rotation: index === path[0] || index === path[path.length - 1] ? 0 : randomRotation(),
   }));
 
   return {
@@ -159,37 +167,26 @@ export function isRoundSolved(round: HackRound): boolean {
   return getConnectedTiles(round).has(round.targetIndex);
 }
 
-function createSpanningTree(columns: number, rows: number): Array<[number, number, Direction]> {
-  const total = columns * rows;
-  const visited = new Set<number>([0]);
-  const edges: Array<[number, number, Direction]> = [];
-  const stack = [0];
-
-  while (stack.length > 0) {
-    const current = stack[stack.length - 1];
-    const row = Math.floor(current / columns);
-    const column = current % columns;
-    const candidates = shuffle(directions).flatMap((direction) => {
-      const [rowOffset, columnOffset] = offsets[direction];
-      const nextRow = row + rowOffset;
-      const nextColumn = column + columnOffset;
-      if (nextRow < 0 || nextRow >= rows || nextColumn < 0 || nextColumn >= columns) return [];
-      const next = nextRow * columns + nextColumn;
-      return visited.has(next) ? [] : [[next, direction] as [number, Direction]];
-    });
-
-    if (candidates.length === 0) {
-      stack.pop();
-      continue;
+function createSnakePath(columns: number, rows: number) {
+  const path: number[] = [];
+  for (let row = 0; row < rows; row += 1) {
+    if (row % 2 === 0) {
+      for (let column = 0; column < columns; column += 1) path.push(row * columns + column);
+    } else {
+      for (let column = columns - 1; column >= 0; column -= 1) path.push(row * columns + column);
     }
-
-    const [next, direction] = candidates[0];
-    visited.add(next);
-    edges.push([current, next, direction]);
-    stack.push(next);
   }
+  return path;
+}
 
-  return edges.length === total - 1 ? edges : createSpanningTree(columns, rows);
+function directionBetween(from: number, to: number, columns: number): Direction {
+  const fromRow = Math.floor(from / columns);
+  const fromColumn = from % columns;
+  const toRow = Math.floor(to / columns);
+  const toColumn = to % columns;
+  if (toRow < fromRow) return "up";
+  if (toRow > fromRow) return "down";
+  return toColumn > fromColumn ? "right" : "left";
 }
 
 function emptyConnections(): Connections {
@@ -198,13 +195,4 @@ function emptyConnections(): Connections {
 
 function randomRotation() {
   return Math.floor(Math.random() * 4);
-}
-
-function shuffle<T>(items: T[]) {
-  const result = [...items];
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
-  }
-  return result;
 }

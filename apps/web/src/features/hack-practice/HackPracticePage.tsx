@@ -217,21 +217,33 @@ function PipeTile({
   onClick: () => void;
 }) {
   const connections = getTileConnections(tile);
-  const colour = connected ? "#9df21d" : "#a7a9a9";
+  const colour = connected ? `url(#pipe-green-${tile.index})` : `url(#pipe-metal-${tile.index})`;
   return (
     <button
       type="button"
       className={`hack-pipe-tile${connected ? " connected" : ""}${source ? " source" : ""}${target ? " target" : ""}`}
-      disabled={disabled}
+      disabled={disabled || source || target}
       onClick={onClick}
       aria-label={`${source ? "Source tile" : target ? "Finish tile" : "Pipe tile"}, rotate clockwise`}
     >
       <svg viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id={`pipe-metal-${tile.index}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#e3e3df" />
+            <stop offset="0.48" stopColor="#8d8f8d" />
+            <stop offset="1" stopColor="#c8c9c5" />
+          </linearGradient>
+          <linearGradient id={`pipe-green-${tile.index}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#c7ff42" />
+            <stop offset="0.5" stopColor="#8ee900" />
+            <stop offset="1" stopColor="#b2fb22" />
+          </linearGradient>
+        </defs>
         {connections.up && <line x1="50" y1="50" x2="50" y2="6" stroke={colour} />}
         {connections.right && <line x1="50" y1="50" x2="94" y2="50" stroke={colour} />}
         {connections.down && <line x1="50" y1="50" x2="50" y2="94" stroke={colour} />}
         {connections.left && <line x1="50" y1="50" x2="6" y2="50" stroke={colour} />}
-        {!target && <circle cx="50" cy="50" r="10" fill={colour} />}
+        {!target && <rect x="43" y="43" width="14" height="14" fill={colour} />}
       </svg>
       {target && <span className="hack-finish-marker" />}
     </button>
