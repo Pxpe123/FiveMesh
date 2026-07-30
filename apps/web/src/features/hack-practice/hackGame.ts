@@ -82,7 +82,8 @@ const opposite: Record<Direction, Direction> = {
 
 export function createHackRound(game: HackGameDefinition): HackRound {
   const total = game.columns * game.rows;
-  const { start, target } = chooseEndpoints(game.columns, game.rows);
+  const start = 0;
+  const target = total - 1;
   const solutions = Array.from({ length: total }, () => emptyConnections());
 
   // The original minigame uses only two-sided straight and corner pieces.
@@ -254,17 +255,6 @@ function createFallbackRoute(columns: number, start: number, target: number) {
     path.push(row * columns + targetColumn);
   }
   return path;
-}
-
-function chooseEndpoints(columns: number, rows: number) {
-  const startRow = Math.floor(Math.random() * (rows - 1));
-  const startColumn = Math.floor(Math.random() * (columns - 1));
-  const targetRow = startRow + 1 + Math.floor(Math.random() * (rows - startRow - 1));
-  const targetColumn = startColumn + 1 + Math.floor(Math.random() * (columns - startColumn - 1));
-  return {
-    start: startRow * columns + startColumn,
-    target: targetRow * columns + targetColumn,
-  };
 }
 
 function isStartMove(from: number, to: number, columns: number) {
