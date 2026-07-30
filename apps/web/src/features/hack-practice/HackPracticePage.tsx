@@ -232,7 +232,6 @@ function PipeTile({
         {connections.right && <><line x1="50" y1="50" x2="94" y2="50" stroke={shadow} className="pipe-shadow" /><line x1="50" y1="50" x2="94" y2="50" stroke={colour} /></>}
         {connections.down && <><line x1="50" y1="50" x2="50" y2="94" stroke={shadow} className="pipe-shadow" /><line x1="50" y1="50" x2="50" y2="94" stroke={colour} /></>}
         {connections.left && <><line x1="50" y1="50" x2="6" y2="50" stroke={shadow} className="pipe-shadow" /><line x1="50" y1="50" x2="6" y2="50" stroke={colour} /></>}
-        {!target && <rect x="43" y="43" width="14" height="14" fill={colour} />}
       </svg>
       {target && <span className="hack-finish-marker" />}
     </button>

@@ -42,7 +42,7 @@ export const hackGames: HackGameDefinition[] = [
     prepTime: 4,
     playTime: 15,
     columns: 7,
-    rows: 5,
+    rows: 4,
   },
   {
     id: "fleeca-bypass",
