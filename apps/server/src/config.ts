@@ -11,6 +11,8 @@ export type AppConfig = {
   webDirectory: string | undefined;
   engineTimeoutMs: number;
   maxUploadBytes: number;
+  maxConversionFiles: number;
+  maxMloFiles: number;
 };
 
 const isBuiltMode = (process.env.FIVEMESH_MODE ?? "dev") === "built";
@@ -50,6 +52,8 @@ export const loadConfig = (): AppConfig => ({
     process.env.MAX_UPLOAD_BYTES,
     300 * 1024 * 1024,
   ),
+  maxConversionFiles: readPositiveNumber(process.env.MAX_CONVERSION_FILES, 64),
+  maxMloFiles: readPositiveNumber(process.env.MAX_MLO_FILES, 128),
 });
 
 function resolveRepositoryRoot(moduleDirectory: string) {

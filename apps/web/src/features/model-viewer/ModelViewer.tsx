@@ -6,12 +6,19 @@ import {
   type ViewerSession,
 } from "./viewer/createViewerSession";
 import type { VehiclePaintSettings } from "./viewer/vehiclePaint";
+import type { ViewerEnvironment } from "./viewer/viewerTools";
 
 type ModelViewerProps = {
   model: PreviewModel | null;
   wireframe: boolean;
   autoRotate: boolean;
   vehiclePaint: VehiclePaintSettings;
+  environment: ViewerEnvironment;
+  showGrid: boolean;
+  showAxes: boolean;
+  showBounds: boolean;
+  resetCameraToken: number;
+  screenshotToken: number;
 };
 
 export function ModelViewer({
@@ -19,6 +26,12 @@ export function ModelViewer({
   wireframe,
   autoRotate,
   vehiclePaint,
+  environment,
+  showGrid,
+  showAxes,
+  showBounds,
+  resetCameraToken,
+  screenshotToken,
 }: ModelViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const sessionRef = useRef<ViewerSession | null>(null);
@@ -32,6 +45,10 @@ export function ModelViewer({
     const session = createViewerSession(host, model, {
       wireframe,
       autoRotate,
+      environment,
+      showGrid,
+      showAxes,
+      showBounds,
     });
     sessionRef.current = session;
 
@@ -52,6 +69,34 @@ export function ModelViewer({
   useEffect(() => {
     sessionRef.current?.setVehiclePaint(vehiclePaint);
   }, [vehiclePaint]);
+
+  useEffect(() => {
+    sessionRef.current?.setEnvironment(environment);
+  }, [environment]);
+
+  useEffect(() => {
+    sessionRef.current?.setGridVisible(showGrid);
+  }, [showGrid]);
+
+  useEffect(() => {
+    sessionRef.current?.setAxesVisible(showAxes);
+  }, [showAxes]);
+
+  useEffect(() => {
+    sessionRef.current?.setBoundsVisible(showBounds);
+  }, [showBounds]);
+
+  useEffect(() => {
+    if (resetCameraToken > 0) {
+      sessionRef.current?.resetCamera();
+    }
+  }, [resetCameraToken]);
+
+  useEffect(() => {
+    if (screenshotToken > 0) {
+      sessionRef.current?.captureScreenshot();
+    }
+  }, [screenshotToken]);
 
   return <div ref={hostRef} className="viewer-canvas" />;
 }

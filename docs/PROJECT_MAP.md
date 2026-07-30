@@ -37,9 +37,59 @@ flowchart LR
     Contract -->|versioned JSON| Client
 ```
 
+## MLO inspection and editing flow
+
+```mermaid
+flowchart LR
+    User["YTYP + referenced YDR/YTD"] --> MloWeb["/mlo workspace"]
+    MloWeb --> MloApi["POST /api/mlo/preview"]
+    MloApi --> MloEngine["Engine mlo-preview"]
+    MloEngine --> Ytyp["CodeWalker YtypFile"]
+    Ytyp --> MloContract["archetypes / rooms / portals / entities"]
+    MloWeb --> Patch["Portal patch"]
+    Patch --> EditApi["POST /api/mlo/edit-portal"]
+    EditApi --> EditEngine["Engine mlo-edit"]
+    EditEngine --> Download["New edited YTYP"]
+```
+
+## Games flow
+
+```mermaid
+flowchart LR
+    Home["Home / Games navigation"] --> Hack["/games/hack-practice"]
+    Hack --> Difficulty["Difficulty and local session state"]
+    Difficulty --> Board["Randomised signal board"]
+    Board --> Input["Mouse or number-key input"]
+    Input --> Result["Timer, score, streak, and mistakes"]
+```
+
+Games are browser-only practice tools. Each game owns its rules and state in a
+feature folder so future lockpick, thermite, memory, or typing exercises do not
+become entangled with the model viewer or asset Engine.
+
+## Conversion flow
+
+```mermaid
+flowchart LR
+    User["XML or YDR/YFT/YTD"] --> WebConverter["/converter\nconversion page"]
+    WebConverter --> ConversionApi["/api/conversion"]
+    ConversionApi --> ConversionService["ConversionService\ntemporary files + ZIP packaging"]
+    ConversionService --> EngineConvert["Engine convert"]
+    EngineConvert --> CodeWalkerXml["CodeWalker XML bridges"]
+    CodeWalkerXml --> Result["XML archive or binary download"]
+```
+
 The boundary between applications is the versioned preview JSON. Engine owns
 how GTA V files are decoded, Server owns execution and transport, and Web owns
 interaction and rendering.
+
+The viewer's professional tools stay in the Web viewer session. Lighting
+presets, grid and axis overlays, bounds, camera reset, screenshots, and mesh
+statistics do not change the preview contract, so they can evolve without
+changing the Engine or Server.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system boundary, viewer
+runtime, conversion sequence, and change map.
 
 ## Folder responsibilities
 
@@ -62,6 +112,7 @@ FiveMesh/
 |       |-- api/               Server calls
 |       |-- components/        Shared visual components
 |       |-- features/          Upload and viewer capabilities
+|       |-- features/mlo/      YTYP inspection and portal editing
 |       |-- styles/            CSS split by responsibility
 |       `-- types/             Browser-side contracts
 |-- examples/                  Hosted demo asset folders
@@ -77,6 +128,8 @@ FiveMesh/
 | Export a changed model | Add an `export` command and CodeWalker writer | Stream the generated file | Add an export action and download handling |
 | Improve material accuracy | Extract more shader parameters | Pass the versioned result unchanged | Map the new material fields to Three.js |
 | Add a hosted example model | No change unless the format is new | Add the asset entry to the examples manifest | Show it on the home screen |
+| Add another XML conversion format | Add the CodeWalker XML bridge and command mapping | Allow the extension and package sidecar files | Add it to the converter format list |
+| Add MLO scene rendering | Reuse the YTYP contract and decode referenced YDRs | Add asset matching and scene preparation | Add portal-aware scene rendering and room visibility |
 | Add jobs or progress | Emit machine-readable progress events | Run Engine behind a job service | Add progress and cancellation UI |
 | Add persistence | Keep Engine stateless | Add a repository/storage service | Add project browsing and save states |
 
@@ -94,7 +147,7 @@ flowchart TB
     Need --> EngineOp --> SchemaChange --> ServerFeature --> WebFeature --> Checks
 ```
 
-Keep CodeWalker types inside `apps/engine/Infrastructure/CodeWalker`. The
-Server and Web should only know the neutral preview JSON. This keeps future
-editors, exporters, thumbnail generators, and batch converters independent from
-the current preview screen.
+Keep CodeWalker types inside `apps/engine`. The Server owns temporary files and
+download packaging, while the Web only knows the conversion request and result
+formats. This keeps future editors, exporters, thumbnail generators, and batch
+converters independent from the current preview screen.

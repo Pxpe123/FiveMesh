@@ -27,6 +27,24 @@ export function AppHeader() {
         >
           Viewer
         </NavLink>
+        <NavLink
+          to="/converter"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          Converter
+        </NavLink>
+        <NavLink
+          to="/mlo"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          MLO
+        </NavLink>
+        <NavLink
+          to="/games/hack-practice"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          Games
+        </NavLink>
       </nav>
       <div className="format-pills" aria-label="Supported formats">
         {supportedFormats.map((format) => (

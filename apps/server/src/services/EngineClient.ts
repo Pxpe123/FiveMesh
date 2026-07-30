@@ -15,23 +15,47 @@ export class EngineClient {
     outputPath: string,
     texturePaths: string[] = [],
   ) {
+    await this.run("preview", [modelPath, outputPath, ...texturePaths]);
+  }
+
+  async createConversion(
+    direction: "binary-to-xml" | "xml-to-binary",
+    inputPath: string,
+    outputPath: string,
+  ) {
+    await this.run("convert", [direction, inputPath, outputPath]);
+  }
+
+  async createMloPreview(
+    ytypPath: string,
+    outputPath: string,
+    assetPaths: string[] = [],
+  ) {
+    await this.run("mlo-preview", [ytypPath, outputPath, ...assetPaths]);
+  }
+
+  async editMloPortal(
+    ytypPath: string,
+    patchPath: string,
+    outputPath: string,
+  ) {
+    await this.run("mlo-edit", [ytypPath, patchPath, outputPath]);
+  }
+
+  private async run(operation: string, argumentsAfterOperation: string[]) {
     const useBuiltEngine =
       Boolean(this.executablePath) && this.executablePath.endsWith(".dll");
-
     const engineArguments = useBuiltEngine
-      ? [this.executablePath, "preview", modelPath, outputPath]
+      ? [this.executablePath, operation, ...argumentsAfterOperation]
       : [
           "run",
           "--project",
           this.projectPath,
           "--no-build",
           "--",
-          "preview",
-          modelPath,
-          outputPath,
+          operation,
+          ...argumentsAfterOperation,
         ];
-
-    engineArguments.push(...texturePaths);
 
     await execFileAsync("dotnet", engineArguments, {
       timeout: this.timeoutMs,

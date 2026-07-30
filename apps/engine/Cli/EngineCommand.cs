@@ -7,3 +7,21 @@ internal sealed record PreviewCommand(
     string OutputPath,
     IReadOnlyList<string> TexturePaths
 ) : EngineCommand;
+
+internal sealed record ConvertCommand(
+    string Direction,
+    string InputPath,
+    string OutputPath
+) : EngineCommand;
+
+internal sealed record MloPreviewCommand(
+    string YtypPath,
+    string OutputPath,
+    IReadOnlyList<string> AssetPaths
+) : EngineCommand;
+
+internal sealed record MloEditCommand(
+    string YtypPath,
+    string PatchPath,
+    string OutputPath
+) : EngineCommand;

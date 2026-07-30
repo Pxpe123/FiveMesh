@@ -15,6 +15,15 @@ try
         case PreviewCommand preview:
             await new PreviewModelService().WriteAsync(preview);
             break;
+        case ConvertCommand conversion:
+            await new AssetConversionService().WriteAsync(conversion);
+            break;
+        case MloPreviewCommand mloPreview:
+            await new MloPreviewService().WriteAsync(mloPreview);
+            break;
+        case MloEditCommand mloEdit:
+            await new MloEditService().WriteAsync(mloEdit);
+            break;
         default:
             throw new InvalidOperationException("The requested engine operation is not supported.");
     }

@@ -13,8 +13,12 @@ FiveMesh is built for fast visual inspection of GTA V model assets:
 
 - decode YDR/YFT model files through a dedicated .NET Engine
 - resolve embedded or uploaded YTD texture dictionaries
+- inspect YTYP archetypes, MLO rooms, portals, and placed entities
+- provide practice games for FiveM RP skills, starting with ATM Bomb Hack Practice
 - serve a neutral preview format through an Express API
 - render textured geometry in a browser-based Three.js viewer
+- provide professional inspection tools such as lighting presets, grid/axis
+  overlays, bounds, triangle statistics, camera reset, and screenshots
 - keep the architecture ready for future editing, export, and batch workflows
 
 ## Public App Experience
@@ -23,10 +27,11 @@ The hosted app starts with a small home screen that explains what FiveMesh is
 and links into the available tools. The current tool is the Model Viewer. More
 apps can be added inside the same shell as the project grows.
 
-The current plan is to extend the viewer with YMAP and YTYP support so MLO and
-map-related data can be explored in the same environment. A broader standalone
-map viewer is also on the table if the format support and rendering pipeline
-make that practical.
+The MLO workspace now reads YTYP archetypes, rooms, portals, and entities. The
+next step is rendering referenced interior YDRs and adding YMAP placement data
+so MLO and map workflows can be explored in the same environment. A broader
+standalone map viewer is also on the table if the format support and rendering
+pipeline make that practical.
 
 The home screen also supports curated examples for visitors who do not know
 FiveM tooling or do not have model files ready. Example assets live in
@@ -84,9 +89,20 @@ The Web app uses route-based pages:
 - `/` is the product home screen and curated example catalogue.
 - `/viewer` is the interactive model viewer.
 - `/viewer?example=<id>` opens a prepared example directly.
+- `/converter` converts YDR, YFT, and YTD assets to XML or rebuilds them from XML.
+- `/mlo` inspects YTYP MLO definitions, referenced assets, rooms, portals, and entities.
+- `/games/hack-practice` is the first interactive RP practice game.
+
+The MLO workspace can export a new YTYP after changing a portal's room links,
+flags, opacity, or four portal corners. The original file is never overwritten.
 
 Home and viewer pages are loaded as separate browser chunks. Example metadata is
 cached in the Web layer so moving between pages does not repeat the same request.
+
+The converter keeps conversion-specific work separate from previewing. Binary to
+XML downloads are packaged as a ZIP so generated XML and extracted DDS texture
+sidecars stay together. XML to binary accepts the XML file plus any referenced
+texture files and returns the selected YDR, YFT, or YTD output.
 
 ## Engineering Notes
 
@@ -138,8 +154,20 @@ tunnel is live.
 
 ## Documentation
 
+- [Architecture](docs/ARCHITECTURE.md)
 - [Project map](docs/PROJECT_MAP.md)
 - [Roadmap](docs/ROADMAP.md)
+
+## GitHub Pages preview
+
+The Web app can be published without the Server or .NET Engine. The
+`Deploy web app to GitHub Pages` workflow builds the static site with a
+repository-safe base path and HashRouter. In the repository settings, set
+Pages to **GitHub Actions**, then push to `main` or `master`.
+
+Asset decoding, uploads, examples, conversion, and MLO inspection show an
+offline notice when the API is unavailable. The ATM Bomb Hack Practice game
+continues to work entirely in the browser and is available from that notice.
 
 ## Access
 

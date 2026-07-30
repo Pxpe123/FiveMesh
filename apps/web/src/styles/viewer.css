@@ -77,7 +77,10 @@
   position: absolute;
   top: 20px;
   right: 20px;
+  max-width: min(760px, calc(100% - 40px));
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 7px;
   padding: 5px;
   border: 1px solid #252e37;
@@ -159,6 +162,30 @@
   background: #183326;
 }
 
+.viewer-toolbar button:disabled {
+  color: #4f5a65;
+  cursor: not-allowed;
+}
+
+.viewer-environment {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px 0 8px;
+  color: #788592;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.viewer-environment select {
+  padding: 6px 7px;
+  border: 1px solid #29323c;
+  border-radius: 5px;
+  color: #b8c2cc;
+  background: #10161d;
+  font-size: 11px;
+}
+
 .model-stats {
   position: absolute;
   top: 20px;
@@ -184,6 +211,13 @@
   color: #65717d;
   font-size: 10px;
   text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .viewer-toolbar {
+    left: 20px;
+    right: 20px;
+  }
 }
 
 .viewport-help {

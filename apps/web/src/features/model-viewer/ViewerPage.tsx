@@ -7,6 +7,7 @@ import { ModelUploadPanel } from "../model-upload/ModelUploadPanel";
 import { useModelPreview } from "../model-upload/useModelPreview";
 import { ViewerPanel } from "./ViewerPanel";
 import { getDefaultVehiclePaint } from "./viewer/vehiclePaint";
+import type { ViewerEnvironment } from "./viewer/viewerTools";
 
 export function ViewerPage() {
   const [searchParams] = useSearchParams();
@@ -20,7 +21,12 @@ export function ViewerPage() {
   const [wireframe, setWireframe] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
   const [vehiclePaint, setVehiclePaint] = useState(getDefaultVehiclePaint);
-
+  const [environment, setEnvironment] = useState<ViewerEnvironment>("studio");
+  const [showGrid, setShowGrid] = useState(true);
+  const [showAxes, setShowAxes] = useState(false);
+  const [showBounds, setShowBounds] = useState(false);
+  const [resetCameraToken, setResetCameraToken] = useState(0);
+  const [screenshotToken, setScreenshotToken] = useState(0);
   useEffect(() => {
     setVehiclePaint(getDefaultVehiclePaint());
   }, [modelPreview.preview?.name]);
@@ -87,6 +93,18 @@ export function ViewerPage() {
         onVehiclePaintChange={setVehiclePaint}
         onWireframeChange={setWireframe}
         onAutoRotateChange={setAutoRotate}
+        environment={environment}
+        showGrid={showGrid}
+        showAxes={showAxes}
+        showBounds={showBounds}
+        onEnvironmentChange={setEnvironment}
+        onGridChange={setShowGrid}
+        onAxesChange={setShowAxes}
+        onBoundsChange={setShowBounds}
+        onResetCamera={() => setResetCameraToken((value) => value + 1)}
+        onScreenshot={() => setScreenshotToken((value) => value + 1)}
+        resetCameraToken={resetCameraToken}
+        screenshotToken={screenshotToken}
       />
     </section>
   );

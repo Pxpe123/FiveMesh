@@ -3,7 +3,9 @@ import express from "express";
 
 import { loadConfig, type AppConfig } from "./config.js";
 import { createExampleRouter } from "./features/examples/exampleRoutes.js";
+import { createConversionRouter } from "./features/conversion/conversionRoutes.js";
 import { createModelRouter } from "./features/models/modelRoutes.js";
+import { createMloRouter } from "./features/mlo/mloRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandlers.js";
 import { healthRouter } from "./routes/healthRoutes.js";
 
@@ -22,7 +24,9 @@ export const createApp = (config: AppConfig = loadConfig()) => {
 
   app.use("/api", healthRouter);
   app.use("/api/examples", createExampleRouter(config));
+  app.use("/api/conversion", createConversionRouter(config));
   app.use("/api/models", createModelRouter(config));
+  app.use("/api/mlo", createMloRouter(config));
 
   if (config.webDirectory) {
     app.use(express.static(config.webDirectory));

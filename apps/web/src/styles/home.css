@@ -23,6 +23,30 @@
   text-decoration: none;
 }
 
+.secondary-action {
+  display: inline-block;
+  margin: 24px 0 0 8px;
+  padding: 11px 15px;
+  border: 1px solid #2c513f;
+  border-radius: 8px;
+  color: #baf7d7;
+  background: #14251c;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.secondary-action:hover {
+  border-color: #61e5a7;
+  background: #183326;
+}
+
+@media (max-width: 560px) {
+  .secondary-action {
+    margin-left: 0;
+  }
+}
+
 .home-section {
   display: grid;
   gap: 15px;

@@ -7,6 +7,10 @@ import {
   isVehiclePreview,
   type VehiclePaintSettings,
 } from "./viewer/vehiclePaint";
+import {
+  viewerEnvironments,
+  type ViewerEnvironment,
+} from "./viewer/viewerTools";
 
 type ViewerPanelProps = {
   model: PreviewModel | null;
@@ -17,6 +21,18 @@ type ViewerPanelProps = {
   onVehiclePaintChange: Dispatch<SetStateAction<VehiclePaintSettings>>;
   onWireframeChange: Dispatch<SetStateAction<boolean>>;
   onAutoRotateChange: Dispatch<SetStateAction<boolean>>;
+  environment: ViewerEnvironment;
+  showGrid: boolean;
+  showAxes: boolean;
+  showBounds: boolean;
+  onEnvironmentChange: Dispatch<SetStateAction<ViewerEnvironment>>;
+  onGridChange: Dispatch<SetStateAction<boolean>>;
+  onAxesChange: Dispatch<SetStateAction<boolean>>;
+  onBoundsChange: Dispatch<SetStateAction<boolean>>;
+  onResetCamera: () => void;
+  onScreenshot: () => void;
+  resetCameraToken: number;
+  screenshotToken: number;
 };
 
 export function ViewerPanel({
@@ -28,6 +44,18 @@ export function ViewerPanel({
   onVehiclePaintChange,
   onWireframeChange,
   onAutoRotateChange,
+  environment,
+  showGrid,
+  showAxes,
+  showBounds,
+  onEnvironmentChange,
+  onGridChange,
+  onAxesChange,
+  onBoundsChange,
+  onResetCamera,
+  onScreenshot,
+  resetCameraToken,
+  screenshotToken,
 }: ViewerPanelProps) {
   const showVehiclePaint = isVehiclePreview(model);
 
@@ -38,6 +66,12 @@ export function ViewerPanel({
         wireframe={wireframe}
         autoRotate={autoRotate}
         vehiclePaint={vehiclePaint}
+        environment={environment}
+        showGrid={showGrid}
+        showAxes={showAxes}
+        showBounds={showBounds}
+        resetCameraToken={resetCameraToken}
+        screenshotToken={screenshotToken}
       />
 
       {!model && !loading && (
@@ -74,6 +108,52 @@ export function ViewerPanel({
           onClick={() => onWireframeChange((value) => !value)}
         >
           Wireframe
+        </button>
+        <button
+          type="button"
+          className={showGrid ? "active" : ""}
+          aria-pressed={showGrid}
+          onClick={() => onGridChange((value) => !value)}
+        >
+          Grid
+        </button>
+        <button
+          type="button"
+          className={showAxes ? "active" : ""}
+          aria-pressed={showAxes}
+          onClick={() => onAxesChange((value) => !value)}
+        >
+          Axes
+        </button>
+        <button
+          type="button"
+          className={showBounds ? "active" : ""}
+          aria-pressed={showBounds}
+          onClick={() => onBoundsChange((value) => !value)}
+          disabled={!model}
+        >
+          Bounds
+        </button>
+        <label className="viewer-environment">
+          <span>Light</span>
+          <select
+            value={environment}
+            onChange={(event) =>
+              onEnvironmentChange(event.target.value as ViewerEnvironment)
+            }
+          >
+            {Object.entries(viewerEnvironments).map(([value, preset]) => (
+              <option key={value} value={value}>
+                {preset.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" onClick={onResetCamera} disabled={!model}>
+          Reset view
+        </button>
+        <button type="button" onClick={onScreenshot} disabled={!model}>
+          Screenshot
         </button>
       </div>
 
@@ -118,6 +198,7 @@ export function ViewerPanel({
           <strong>{model.name}</strong>
           <span>{model.meshes.length} meshes</span>
           <span>{model.textures.length} textures</span>
+          <span>{formatTriangleCount(model)} tris</span>
         </div>
       )}
 
@@ -126,6 +207,14 @@ export function ViewerPanel({
       </div>
     </section>
   );
+}
+
+function formatTriangleCount(model: PreviewModel) {
+  const triangles = model.meshes.reduce(
+    (total, mesh) => total + Math.floor(mesh.indices.length / 3),
+    0,
+  );
+  return triangles.toLocaleString();
 }
 
 type PaintFieldProps = {

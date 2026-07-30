@@ -16,11 +16,14 @@ export function HomeScreen() {
         <p className="lede">
           FiveMesh decodes RAGE model files through a dedicated Engine, serves
           the result through a small API, and renders the preview in WebGL. The
-          first app is the model viewer, with room for editing and batch tools
-          later.
+          model viewer and MLO workspace are the first tools, with room for
+          map, editing, and batch workflows later.
         </p>
         <Link className="primary-action" to="/viewer">
           Open viewer
+        </Link>
+        <Link className="secondary-action" to="/games/hack-practice">
+          Play ATM Bomb Hack Practice
         </Link>
       </div>
 
@@ -34,7 +37,7 @@ export function HomeScreen() {
             <Link
               key={app.name}
               className={`app-card ${app.status !== "available" ? "planned" : ""}`}
-              to={app.status === "available" ? `/${app.id}` : "#"}
+              to={app.status === "available" ? app.path : "#"}
               aria-disabled={app.status !== "available"}
               onClick={(event) => {
                 if (app.status !== "available") event.preventDefault();

@@ -27,6 +27,44 @@ button {
   background: #090d12;
 }
 
+.backend-status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 30px;
+  border-bottom: 1px solid #664b28;
+  color: #f2d59a;
+  background: #211b12;
+  font-size: 12px;
+}
+
+.backend-status-banner div {
+  display: grid;
+  gap: 2px;
+}
+
+.backend-status-banner span {
+  color: #bca87c;
+  font-size: 11px;
+}
+
+.backend-status-banner a {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid #866637;
+  border-radius: 6px;
+  color: #f7e5bc;
+  background: #3a2c18;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.backend-status-banner a:hover {
+  background: #4b381f;
+}
+
 .topbar {
   display: flex;
   align-items: center;
@@ -118,6 +156,12 @@ button {
 
   .format-pills {
     display: none;
+  }
+
+  .backend-status-banner {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 10px 18px;
   }
 }
 
