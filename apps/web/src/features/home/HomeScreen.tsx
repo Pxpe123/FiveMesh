@@ -19,13 +19,27 @@ export function HomeScreen() {
           model viewer and MLO workspace are the first tools, with room for
           map, editing, and batch workflows later.
         </p>
-        <Link className="primary-action" to="/viewer">
-          Open viewer
+        <Link className="primary-action" to="/games/hack-practice">
+          Practice Hacks
         </Link>
-        <Link className="secondary-action" to="/games/hack-practice">
-          Play ATM Bomb Hack Practice
+        <Link className="secondary-action" to="/viewer">
+          Open model viewer
         </Link>
       </div>
+
+      <section className="featured-practice" aria-labelledby="practice-heading">
+        <div className="featured-practice-copy">
+          <p className="section-label">FiveM RP practice games</p>
+          <h2 id="practice-heading">Practice Hacks</h2>
+          <p>
+            Use the browser-based ATM Bomb Hack Practice game to rehearse the
+            pipe-connection hack before using it in an RP server.
+          </p>
+        </div>
+        <Link className="featured-practice-action" to="/games/hack-practice">
+          Open Practice Hacks <span aria-hidden="true">→</span>
+        </Link>
+      </section>
 
       <div className="home-section">
         <div className="section-heading">

@@ -42,10 +42,10 @@ export const fiveMeshApps: FiveMeshApp[] = [
   {
     id: "hack-practice",
     path: "/games/hack-practice",
-    name: "ATM Bomb Hack Practice",
+    name: "Practice Hacks",
     status: "available",
     description:
-      "Practise timed signal-trace hacking challenges for FiveM RP scenarios.",
+      "Practise the ATM Bomb Hack and future FiveM RP minigames in your browser.",
   },
 ];
 

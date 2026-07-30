@@ -41,6 +41,55 @@
   background: #183326;
 }
 
+.featured-practice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 26px 28px;
+  border: 1px solid #547d27;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 90% 10%, #829c272b, transparent 42%),
+    linear-gradient(110deg, #1c2a18, #111b16 65%);
+  box-shadow: 0 18px 50px #0000002e;
+}
+
+.featured-practice-copy {
+  display: grid;
+  gap: 7px;
+  max-width: 650px;
+}
+
+.featured-practice-copy h2 {
+  margin: 0;
+  color: #efffd7;
+  font: 700 clamp(24px, 4vw, 34px) "Space Grotesk", sans-serif;
+}
+
+.featured-practice-copy p:last-child {
+  margin: 0;
+  color: #bed0af;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.featured-practice-action {
+  flex: 0 0 auto;
+  padding: 13px 17px;
+  border: 1px solid #9df21d;
+  border-radius: 8px;
+  color: #101705;
+  background: #9df21d;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.featured-practice-action:hover {
+  background: #b4fa49;
+}
+
 @media (max-width: 560px) {
   .secondary-action {
     margin-left: 0;
@@ -152,5 +201,11 @@
 @media (max-width: 800px) {
   .home-screen {
     padding: 34px 18px;
+  }
+
+  .featured-practice {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 22px;
   }
 }
