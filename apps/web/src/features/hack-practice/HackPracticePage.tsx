@@ -29,9 +29,6 @@ export function HackPracticePage() {
 
   const selectedGame = hackGames.find((game) => game.id === selectedGameId) ?? hackGames[0];
 
-  if (selectedGameId === "store-cash") {
-    return <StoreCashRegisterPractice onSelectGame={selectGame} />;
-  }
   const solvedRound = useMemo(
     () => round ? { ...round, tiles: round.tiles.map((tile) => ({ ...tile, rotation: 0 })) } : null,
     [round],
@@ -82,6 +79,10 @@ export function HackPracticePage() {
 
     return () => window.clearInterval(timer);
   }, [status]);
+
+  if (selectedGameId === "store-cash") {
+    return <StoreCashRegisterPractice onSelectGame={selectGame} />;
+  }
 
   function handleTileClick(index: number) {
     if (status !== "playing" || !round || showSolution) return;
