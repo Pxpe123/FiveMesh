@@ -56,7 +56,7 @@ export function BackendStatusBanner() {
           entirely in your browser.
         </span>
       </div>
-      <Link to="/games/hack-practice">Play ATM Bomb Hack Practice</Link>
+      <Link to="/games/hack-practice">Practice Hacks</Link>
     </aside>
   );
 }

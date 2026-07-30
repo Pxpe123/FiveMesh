@@ -45,7 +45,7 @@ export const fiveMeshApps: FiveMeshApp[] = [
     name: "Practice Hacks",
     status: "available",
     description:
-      "Practise the ATM Bomb Hack and future FiveM RP minigames in your browser.",
+      "Browser-based FiveM RP hacking minigames, starting with the ATM pipe hack.",
   },
 ];
 

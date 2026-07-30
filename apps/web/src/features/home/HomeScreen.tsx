@@ -32,8 +32,8 @@ export function HomeScreen() {
           <p className="section-label">FiveM RP practice games</p>
           <h2 id="practice-heading">Practice Hacks</h2>
           <p>
-            Use the browser-based ATM Bomb Hack Practice game to rehearse the
-            pipe-connection hack before using it in an RP server.
+            Rehearse the ATM pipe-connection hack in your browser before using
+            it in an RP server.
           </p>
         </div>
         <Link className="featured-practice-action" to="/games/hack-practice">
@@ -57,7 +57,7 @@ export function HomeScreen() {
                 if (app.status !== "available") event.preventDefault();
               }}
             >
-              <span>{app.status}</span>
+              <span>{app.id === "hack-practice" ? "featured game" : app.status}</span>
               <strong>{app.name}</strong>
               <small>{app.description}</small>
             </Link>
