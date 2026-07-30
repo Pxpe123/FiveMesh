@@ -2,7 +2,7 @@ export type Direction = "up" | "right" | "down" | "left";
 
 export type Connections = Record<Direction, boolean>;
 
-export type HackGameId = "atm-bomb" | "fleeca-bypass" | "thermite-charge";
+export type HackGameId = "atm-bomb" | "store-cash" | "thermite-charge";
 
 export type HackGameDefinition = {
   id: HackGameId;
@@ -45,14 +45,14 @@ export const hackGames: HackGameDefinition[] = [
     rows: 4,
   },
   {
-    id: "fleeca-bypass",
+    id: "store-cash",
     name: "Store Cash Register",
-    description: "A future store cash-register practice game.",
-    status: "coming-soon",
+    description: "Two-cycle register lock practice based on Store Robbery.",
+    status: "available",
     prepTime: 0,
-    playTime: 0,
-    columns: 7,
-    rows: 5,
+    playTime: 15,
+    columns: 0,
+    rows: 0,
   },
   {
     id: "thermite-charge",

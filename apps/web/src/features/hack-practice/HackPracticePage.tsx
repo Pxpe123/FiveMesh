@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { StoreCashRegisterPractice } from "./StoreCashRegisterPractice";
 import {
   createHackRound,
   getConnectedTiles,
@@ -27,6 +28,10 @@ export function HackPracticePage() {
   const [message, setMessage] = useState("Choose a game to begin.");
 
   const selectedGame = hackGames.find((game) => game.id === selectedGameId) ?? hackGames[0];
+
+  if (selectedGameId === "store-cash") {
+    return <StoreCashRegisterPractice onSelectGame={selectGame} />;
+  }
   const solvedRound = useMemo(
     () => round ? { ...round, tiles: round.tiles.map((tile) => ({ ...tile, rotation: 0 })) } : null,
     [round],
