@@ -70,11 +70,11 @@
 .store-dial::before { position: absolute; content: ""; inset: 17px; border: 8px solid #f2f3f4; border-radius: 50%; box-shadow: 0 0 8px #fff6, inset 0 0 0 2px #59616b; }
 .store-dial::after { position: absolute; content: ""; inset: 29px; border: 2px solid #292f38; border-radius: 50%; }
 .store-target-arc { position: absolute; inset: 17px; border: 9px solid transparent; border-top-color: #aaa7ff; border-right-color: #aaa7ff; border-radius: 50%; filter: drop-shadow(0 0 8px #7e7bff); pointer-events: none; }
-.store-marker { position: absolute; z-index: 2; top: calc(50% - 9px); left: calc(50% - 9px); width: 18px; height: 18px; border: 2px solid #fff; border-radius: 2px; background: #9b98ff; box-shadow: 0 0 9px #a39fff, 0 0 0 3px #191d27; pointer-events: none; }
-.store-solution-point { position: absolute; z-index: 3; top: calc(50% - 7px); left: calc(50% - 7px); width: 14px; height: 14px; border: 2px solid #fffbd0; border-radius: 2px; background: #ffd84a; box-shadow: 0 0 13px #ffd84a, 0 0 0 3px #302b12; pointer-events: none; }
+.store-marker { position: absolute; z-index: 2; top: calc(50% - 5px); left: calc(50% - 5px); width: 10px; height: 10px; border: 1px solid #fff; border-radius: 2px; background: #9b98ff; box-shadow: 0 0 7px #a39fff, 0 0 0 2px #191d27; pointer-events: none; }
+.store-solution-point { position: absolute; z-index: 3; top: calc(50% - 5px); left: calc(50% - 5px); width: 10px; height: 10px; border: 1px solid #fffbd0; border-radius: 2px; background: #ffd84a; box-shadow: 0 0 10px #ffd84a, 0 0 0 2px #302b12; pointer-events: none; }
 .store-dial-core { position: absolute; top: 50%; left: 50%; width: 29%; aspect-ratio: 1; overflow: hidden; border: 1px solid #424b58; border-radius: 50%; background: #171b26; transform: translate(-50%, -50%); box-shadow: 0 0 22px #817eff55; pointer-events: none; }
 .store-dial-core::before { position: absolute; content: ""; inset: 12%; border: 1px solid #3c3c68; border-radius: 50%; }
-.store-dial-core span { position: absolute; right: 0; bottom: 0; left: 0; border-radius: 50% 50% 0 0; background: linear-gradient(#aaa7ff, #6561d8); box-shadow: 0 0 18px #817eff99; transition: height .05s linear; }
+.store-dial-core span { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #aaa7ff, #6561d8); box-shadow: 0 0 18px #817eff99; transform-origin: center; transition: transform .08s linear; }
 .store-cycle-label { color: #b8b6ff; font: 600 12px "Space Grotesk", sans-serif; letter-spacing: .12em; text-transform: uppercase; }
 
 @media (max-width: 820px) {

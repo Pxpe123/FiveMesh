@@ -40,8 +40,8 @@ export function StoreCashRegisterPractice({
       return;
     }
     const fillTimer = window.setInterval(() => {
-      setTargetProgress((current) => Math.min(100, current + 4));
-    }, 50);
+      setTargetProgress((current) => Math.min(100, current + 2));
+    }, 80);
     return () => window.clearInterval(fillTimer);
   }, [status, hoveringTarget, targetAngle]);
 
@@ -160,7 +160,7 @@ export function StoreCashRegisterPractice({
                 <div className="store-target-arc" style={{ transform: `rotate(${targetAngle}deg)` }} />
                 {showSolution && <div className="store-solution-point" style={{ transform: `rotate(${targetAngle}deg) translateY(-112px)` }} />}
                 <div className="store-marker" style={{ transform: `rotate(${markerAngle}deg) translateY(-112px)` }} />
-                <div className="store-dial-core"><span style={{ height: `${targetProgress}%` }} /></div>
+                <div className="store-dial-core"><span style={{ transform: `translate(-50%, -50%) scale(${targetProgress / 100})` }} /></div>
               </div>
               <span className="store-cycle-label">Cycle {Math.min(cycle + 1, CYCLES)} / {CYCLES}</span>
             </div>
