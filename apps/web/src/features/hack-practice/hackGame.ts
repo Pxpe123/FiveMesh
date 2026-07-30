@@ -46,8 +46,8 @@ export const hackGames: HackGameDefinition[] = [
   },
   {
     id: "fleeca-bypass",
-    name: "Fleeca Vault Bypass",
-    description: "A future vault-terminal practice game.",
+    name: "Store Cash Register",
+    description: "A future store cash-register practice game.",
     status: "coming-soon",
     prepTime: 0,
     playTime: 0,
@@ -56,8 +56,8 @@ export const hackGames: HackGameDefinition[] = [
   },
   {
     id: "thermite-charge",
-    name: "Thermite Charge Practice",
-    description: "A future thermite timing challenge.",
+    name: "Flapper-Hero (ATM)",
+    description: "A future ATM flapper timing challenge.",
     status: "coming-soon",
     prepTime: 0,
     playTime: 0,
