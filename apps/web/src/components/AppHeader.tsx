@@ -40,6 +40,12 @@ export function AppHeader() {
           MLO
         </NavLink>
         <NavLink
+          to="/map"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          Map
+        </NavLink>
+        <NavLink
           to="/games/hack-practice"
           className={({ isActive }) => (isActive ? "active" : "")}
         >

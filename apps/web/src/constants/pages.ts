@@ -1,4 +1,4 @@
-export type AppPage = "viewer" | "converter" | "mlo" | "hack-practice";
+export type AppPage = "viewer" | "converter" | "mlo" | "map" | "hack-practice";
 
 export type FiveMeshApp = {
   id: AppPage;
@@ -38,6 +38,14 @@ export const fiveMeshApps: FiveMeshApp[] = [
     status: "available",
     description:
       "Inspect YTYP archetypes, rooms, portals, and entities, then export portal edits.",
+  },
+  {
+    id: "map",
+    path: "/map",
+    name: "Map & Coordinates",
+    status: "available",
+    description:
+      "Click the Los Santos map to copy FiveM-ready X, Y, and Z coordinates.",
   },
   {
     id: "hack-practice",
