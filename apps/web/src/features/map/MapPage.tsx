@@ -1,4 +1,15 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import {
+  createMarkerId,
+  getCustomMarkerIconLabel,
+  loadCustomMarkers,
+  saveCustomMarkers,
+  type CustomMapMarker,
+  type CustomMarkerIcon,
+} from "./customMarkers";
+import { CustomMarkerEditor } from "./CustomMarkerEditor";
+import { MapMarkerIcon } from "./MapMarkerIcon";
 
 import {
   findDrivingRoute,
@@ -15,7 +26,7 @@ import {
 
 type Coordinate = WorldCoordinate;
 type MapType = "roadmap" | "satellite" | "atlas";
-type PlacementMode = "start" | "waypoint";
+type PlacementMode = "start" | "waypoint" | "marker";
 
 const MAP_VIEW_WIDTH = 1000;
 const MAP_VIEW_HEIGHT = 1300;
@@ -29,6 +40,11 @@ export function MapPage() {
   const [routeStart, setRouteStart] = useState<Coordinate | null>(null);
   const [waypoint, setWaypoint] = useState<Coordinate | null>(null);
   const [selectedLocationId, setSelectedLocationId] = useState("");
+  const [customMarkers, setCustomMarkers] = useState(loadCustomMarkers);
+  const [selectedCustomMarkerId, setSelectedCustomMarkerId] = useState("");
+  const [markerName, setMarkerName] = useState("");
+  const [markerIcon, setMarkerIcon] = useState<CustomMarkerIcon>("pin");
+  const [markerMessage, setMarkerMessage] = useState("");
 
   const selectedCoordinate = useMemo(() => {
     if (!coordinate) return null;
@@ -44,10 +60,26 @@ export function MapPage() {
     () => importantMapLocations.find((item) => item.id === selectedLocationId) ?? null,
     [selectedLocationId],
   );
+  const selectedCustomMarker = useMemo(
+    () => customMarkers.find((item) => item.id === selectedCustomMarkerId) ?? null,
+    [customMarkers, selectedCustomMarkerId],
+  );
+
+  useEffect(() => {
+    try {
+      saveCustomMarkers(customMarkers);
+    } catch {
+      setMarkerMessage("This browser could not save your markers.");
+    }
+  }, [customMarkers]);
 
   function selectCoordinate(nextCoordinate: Coordinate) {
     setSelectedLocationId("");
+    if (placementMode !== "marker") setSelectedCustomMarkerId("");
     setCoordinate(nextCoordinate);
+    setHeight(nextCoordinate.z.toFixed(1));
+    setMarkerMessage("");
+    if (placementMode === "marker") return;
     if (placementMode === "start") {
       setRouteStart(nextCoordinate);
       setPlacementMode("waypoint");
@@ -58,6 +90,7 @@ export function MapPage() {
 
   function selectImportantLocation(id: string) {
     setSelectedLocationId(id);
+    setSelectedCustomMarkerId("");
     const location = importantMapLocations.find((item) => item.id === id);
     if (!location) return;
     setCoordinate(location);
@@ -66,12 +99,82 @@ export function MapPage() {
     setPlacementMode(routeStart ? "waypoint" : "start");
   }
 
+  function selectCustomMarker(id: string) {
+    setSelectedCustomMarkerId(id);
+    setSelectedLocationId("");
+    const marker = customMarkers.find((item) => item.id === id);
+    if (!marker) return;
+    setCoordinate(marker);
+    setHeight(marker.z.toFixed(1));
+    setMarkerName(marker.name);
+    setMarkerIcon(marker.icon);
+    setPlacementMode("marker");
+    setMarkerMessage("");
+  }
+
+  function beginCustomMarker() {
+    setPlacementMode("marker");
+    setSelectedLocationId("");
+    setSelectedCustomMarkerId("");
+    setCoordinate(null);
+    setHeight("0.0");
+    setMarkerName("");
+    setMarkerIcon("pin");
+    setMarkerMessage("Click the map to choose where the marker belongs.");
+  }
+
+  function storeCustomMarker() {
+    const name = markerName.trim();
+    if (!selectedCoordinate) {
+      setMarkerMessage("Click the map to choose a position first.");
+      return;
+    }
+    if (!name) {
+      setMarkerMessage("Give the marker a name first.");
+      return;
+    }
+    if (!selectedCustomMarkerId && customMarkers.length >= 250) {
+      setMarkerMessage("Delete an old marker before adding another.");
+      return;
+    }
+
+    const marker: CustomMapMarker = {
+      ...selectedCoordinate,
+      id: selectedCustomMarkerId || createMarkerId(),
+      name,
+      icon: markerIcon,
+    };
+    setCustomMarkers((current) => selectedCustomMarkerId
+      ? current.map((item) => item.id === selectedCustomMarkerId ? marker : item)
+      : [...current, marker]);
+    setSelectedCustomMarkerId(marker.id);
+    setMarkerMessage(selectedCustomMarkerId ? "Marker updated." : "Marker saved to this browser.");
+  }
+
+  function routeToCustomMarker() {
+    if (!selectedCoordinate) return;
+    setWaypoint(selectedCoordinate);
+    setPlacementMode(routeStart ? "waypoint" : "start");
+    setMarkerMessage(routeStart ? "Marker set as your waypoint." : "Now choose your starting point.");
+  }
+
+  function deleteCustomMarker() {
+    if (!selectedCustomMarkerId) return;
+    setCustomMarkers((current) => current.filter((item) => item.id !== selectedCustomMarkerId));
+    setSelectedCustomMarkerId("");
+    setMarkerName("");
+    setMarkerIcon("pin");
+    setCoordinate(null);
+    setMarkerMessage("Marker deleted.");
+  }
+
   function clearRoute() {
     setCoordinate(null);
     setRouteStart(null);
     setWaypoint(null);
     setPlacementMode("start");
     setSelectedLocationId("");
+    setSelectedCustomMarkerId("");
   }
 
   async function copyCoordinate(value: string, label: string) {
@@ -92,7 +195,8 @@ export function MapPage() {
           <h1>Los Santos coordinate finder.</h1>
           <p className="lede">
             Place your current position and a waypoint to generate a driving
-            route, or copy any selected point into your FiveM resource.
+            route, save your own private map markers, or copy any selected point
+            into your FiveM resource.
           </p>
         </div>
         <div className="map-coordinate-contract">
@@ -107,7 +211,7 @@ export function MapPage() {
           <div className="map-panel-heading">
             <div>
               <span className="section-label">Los Santos / Blaine County</span>
-              <strong>{placementMode === "start" ? "Click to set your starting point" : "Click to set your waypoint"}</strong>
+              <strong>{placementInstruction(placementMode)}</strong>
             </div>
             <div className="map-view-switch" role="radiogroup" aria-label="Map view">
               {(["roadmap", "satellite", "atlas"] as MapType[]).map((view) => (
@@ -144,9 +248,20 @@ export function MapPage() {
               >
                 Set waypoint
               </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={placementMode === "marker"}
+                className={placementMode === "marker" ? "active" : ""}
+                onClick={beginCustomMarker}
+              >
+                Add marker
+              </button>
             </div>
             <span>
-              {drivingRoute ? "Best route ready" : routeStart ? "Choose a destination" : "Choose where the journey starts"}
+              {placementMode === "marker"
+                ? `${customMarkers.length} custom marker${customMarkers.length === 1 ? "" : "s"} saved locally`
+                : drivingRoute ? "Best route ready" : routeStart ? "Choose a destination" : "Choose where the journey starts"}
             </span>
             <button type="button" className="map-clear-route" onClick={clearRoute} disabled={!routeStart && !waypoint}>
               Clear route
@@ -167,6 +282,21 @@ export function MapPage() {
               ))}
             </select>
           </label>
+          <label className="map-location-picker">
+            <span>Your markers</span>
+            <select
+              value={selectedCustomMarkerId}
+              onChange={(event) => selectCustomMarker(event.target.value)}
+              disabled={customMarkers.length === 0}
+            >
+              <option value="">{customMarkers.length === 0 ? "No saved markers yet" : "Choose a saved marker…"}</option>
+              {customMarkers.map((marker) => (
+                <option key={marker.id} value={marker.id}>
+                  {getCustomMarkerIconLabel(marker.icon)} · {marker.name}
+                </option>
+              ))}
+            </select>
+          </label>
           <CoordinateMap
             coordinate={selectedCoordinate}
             routeStart={routeStart}
@@ -176,6 +306,8 @@ export function MapPage() {
             placementMode={placementMode}
             locations={importantMapLocations}
             selectedLocationId={selectedLocationId}
+            customMarkers={customMarkers}
+            selectedCustomMarkerId={selectedCustomMarkerId}
             onSelect={selectCoordinate}
           />
           <div className="map-legend" aria-label="Map legend">
@@ -183,6 +315,7 @@ export function MapPage() {
             <span><i className="legend-road" />Major roads</span>
             <span><i className="legend-route" />Driving route</span>
             <span><i className="legend-marker" />Important locations</span>
+            <span><i className="legend-custom-marker" />Your markers</span>
           </div>
           <a className="map-attribution" href="https://github.com/CreepPork/GTAV-Maps" target="_blank" rel="noreferrer">
             Map artwork: GTAV-Maps · MIT License
@@ -191,8 +324,12 @@ export function MapPage() {
 
         <aside className="coordinate-panel" aria-live="polite">
           <div className="coordinate-panel-heading">
-            <span className="section-label">{selectedLocation?.category ?? "Selected point"}</span>
-            <strong>{selectedLocation?.name ?? (selectedCoordinate ? "Ready to use" : "No point selected")}</strong>
+            <span className="section-label">
+              {selectedCustomMarker ? "Your marker" : selectedLocation?.category ?? "Selected point"}
+            </span>
+            <strong>
+              {selectedCustomMarker?.name ?? selectedLocation?.name ?? (selectedCoordinate ? "Ready to use" : "No point selected")}
+            </strong>
           </div>
 
           {selectedCoordinate ? (
@@ -223,6 +360,19 @@ export function MapPage() {
                   onChange={(event) => setHeight(event.target.value)}
                 />
               </label>
+              {placementMode === "marker" && (
+                <CustomMarkerEditor
+                  name={markerName}
+                  icon={markerIcon}
+                  message={markerMessage}
+                  isEditing={Boolean(selectedCustomMarkerId)}
+                  onNameChange={setMarkerName}
+                  onIconChange={setMarkerIcon}
+                  onSave={storeCustomMarker}
+                  onRoute={routeToCustomMarker}
+                  onDelete={deleteCustomMarker}
+                />
+              )}
               <div className="coordinate-copy-list">
                 <button
                   type="button"
@@ -252,7 +402,7 @@ export function MapPage() {
           ) : (
             <div className="coordinate-empty">
               <span className="coordinate-crosshair" aria-hidden="true">+</span>
-              <p>Click the map to place your first marker.</p>
+              <p>{placementMode === "marker" ? markerMessage : "Click the map to place your first marker."}</p>
             </div>
           )}
         </aside>
@@ -282,6 +432,8 @@ function CoordinateMap({
   placementMode,
   locations,
   selectedLocationId,
+  customMarkers,
+  selectedCustomMarkerId,
   onSelect,
 }: {
   coordinate: Coordinate | null;
@@ -292,6 +444,8 @@ function CoordinateMap({
   placementMode: PlacementMode;
   locations: MapLocation[];
   selectedLocationId: string;
+  customMarkers: CustomMapMarker[];
+  selectedCustomMarkerId: string;
   onSelect: (coordinate: Coordinate) => void;
 }) {
   const mapRef = useRef<HTMLButtonElement>(null);
@@ -322,7 +476,7 @@ function CoordinateMap({
           if (bounds) selectFromPointer(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
         }
       }}
-      aria-label={`Los Santos map. Click to set the ${placementMode === "start" ? "starting point" : "waypoint"}.`}
+      aria-label={`Los Santos map. ${placementInstruction(placementMode)}`}
     >
       <svg className="coordinate-map-art" viewBox={`0 0 ${MAP_VIEW_WIDTH} ${MAP_VIEW_HEIGHT}`} aria-hidden="true">
         <rect width={MAP_VIEW_WIDTH} height={MAP_VIEW_HEIGHT} fill="#07131c" />
@@ -351,7 +505,7 @@ function CoordinateMap({
         )}
       </svg>
       <span className="map-north-indicator">N</span>
-      {coordinate && !routeStart && !waypoint && (
+      {coordinate && (placementMode === "marker" || (!routeStart && !waypoint)) && (
         <span
           className="coordinate-marker"
           style={{
@@ -381,6 +535,17 @@ function CoordinateMap({
           title={`${location.name} (${location.category})`}
           aria-hidden="true"
         />
+      ))}
+      {customMarkers.map((marker) => (
+        <span
+          key={marker.id}
+          className={`map-custom-marker map-custom-marker-${marker.icon}${selectedCustomMarkerId === marker.id ? " selected" : ""}`}
+          style={markerPosition(marker)}
+          title={marker.name}
+          aria-hidden="true"
+        >
+          <MapMarkerIcon icon={marker.icon} />
+        </span>
       ))}
     </button>
   );
@@ -412,6 +577,12 @@ function formatDistance(distance: number) {
 function formatDuration(seconds: number) {
   const minutes = Math.max(1, Math.round(seconds / 60));
   return `${minutes} min`;
+}
+
+function placementInstruction(mode: PlacementMode) {
+  if (mode === "marker") return "Click to place your custom marker";
+  if (mode === "waypoint") return "Click to set your waypoint";
+  return "Click to set your starting point";
 }
 
 function toSvgPoints(points: DrivingRoute["points"]) {

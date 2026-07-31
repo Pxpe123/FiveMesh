@@ -51,7 +51,7 @@
 
 .map-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 285px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 14px;
   min-width: 0;
 }
@@ -209,6 +209,11 @@
   font-size: 11px;
 }
 
+.map-location-picker select:disabled {
+  color: #5f6b74;
+  cursor: not-allowed;
+}
+
 .map-north-indicator {
   position: absolute;
   top: 14px;
@@ -312,6 +317,52 @@
   box-shadow: 0 0 0 5px #9df21d33, 0 0 16px #9df21d;
 }
 
+.map-custom-marker {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 2px solid #f2f7f4;
+  border-radius: 50% 50% 50% 4px;
+  color: #07110d;
+  background: #71dca8;
+  box-shadow: 0 4px 12px #0009;
+  transform: translate(-50%, -75%) rotate(-45deg);
+  pointer-events: none;
+}
+
+.map-custom-marker svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(45deg);
+}
+
+.map-custom-marker-fuel,
+.map-custom-marker-hospital,
+.map-custom-marker-police,
+.map-custom-marker-bank {
+  background: #69c9f0;
+}
+
+.map-custom-marker-cannabis,
+.map-custom-marker-weapon,
+.map-custom-marker-package,
+.map-custom-marker-mask {
+  background: #f08b69;
+}
+
+.map-custom-marker.selected {
+  z-index: 6;
+  box-shadow: 0 0 0 5px #9df21d40, 0 0 18px #9df21d;
+}
+
 .coordinate-marker i {
   top: 10px;
   right: -9px;
@@ -358,6 +409,7 @@
 .legend-road { background: #b3a56d; }
 .legend-route { background: #9df21d; box-shadow: 0 0 7px #9df21d; }
 .legend-marker { background: #9df21d; box-shadow: 0 0 7px #9df21d; }
+.legend-custom-marker { background: #71dca8; box-shadow: 0 0 7px #71dca8; }
 
 .coordinate-panel {
   display: grid;
@@ -448,6 +500,127 @@
   color: #dce7ed;
   background: #10171d;
   font: 500 13px "Space Grotesk", sans-serif;
+}
+
+.custom-marker-editor {
+  display: grid;
+  gap: 11px;
+  padding-top: 15px;
+  border-top: 1px solid #24313a;
+}
+
+.custom-marker-name {
+  display: grid;
+  gap: 6px;
+  color: #788692;
+  font-size: 11px;
+}
+
+.custom-marker-name input {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #293741;
+  border-radius: 6px;
+  color: #dce7ed;
+  background: #10171d;
+  font: 500 12px "Space Grotesk", sans-serif;
+}
+
+.custom-marker-icons {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.custom-marker-icons legend,
+.custom-marker-icon-group > span {
+  color: #788692;
+  font-size: 11px;
+}
+
+.custom-marker-icon-group {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-marker-icon-group > div {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+.custom-marker-icon-group button {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #293741;
+  border-radius: 6px;
+  color: #92a0aa;
+  background: #10171d;
+  cursor: pointer;
+}
+
+.custom-marker-icon-group button:hover,
+.custom-marker-icon-group button.active {
+  border-color: #61e5a7;
+  color: #c9ffe4;
+  background: #183326;
+}
+
+.custom-marker-icon-group svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.custom-marker-icon-name,
+.custom-marker-editor small,
+.custom-marker-message {
+  color: #74818d;
+  font-size: 10px;
+}
+
+.custom-marker-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.custom-marker-actions button {
+  padding: 9px 11px;
+  border: 1px solid #293741;
+  border-radius: 6px;
+  color: #9aa7b1;
+  background: #10171d;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.custom-marker-actions .custom-marker-save {
+  flex: 1;
+  border-color: #61e5a7;
+  color: #07110d;
+  background: #61e5a7;
+}
+
+.custom-marker-actions .custom-marker-delete:hover {
+  border-color: #ec766e;
+  color: #ffaaa4;
+}
+
+.custom-marker-message {
+  color: #9df21d;
 }
 
 .coordinate-copy-list {
@@ -596,7 +769,7 @@
 
   .map-placement-switch {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .map-view-switch {

@@ -32,6 +32,16 @@ apps/web/src/features/map/mapLocations.ts
 The data contract supports an ID, display name, category, and X/Y/Z position.
 Future sources can be normalized into that same structure.
 
+## Personal markers
+
+Custom markers are saved only in the visitor's browser using `localStorage`.
+They are not sent to the FiveMesh server and are not included in map analytics.
+The stored document is versioned so future releases can migrate it safely.
+
+Each marker records a name, an icon choice, and its X/Y/Z position. The current
+icon set covers everyday places, public services, and roleplay activity such as
+weed grows, weapon stashes, drops, and robberies.
+
 ## Why gta-5-map.com is not scraped
 
 The site blocks automated access through its robots policy, and its map and
