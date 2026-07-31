@@ -4,6 +4,7 @@ import type { PreviewModel } from "../../types/previewModel";
 import { ModelViewer } from "./ModelViewer";
 import {
   getDefaultVehiclePaint,
+  classifyPaintChannel,
   isVehiclePreview,
   type VehiclePaintSettings,
 } from "./viewer/vehiclePaint";
@@ -25,10 +26,12 @@ type ViewerPanelProps = {
   showGrid: boolean;
   showAxes: boolean;
   showBounds: boolean;
+  showInspector: boolean;
   onEnvironmentChange: Dispatch<SetStateAction<ViewerEnvironment>>;
   onGridChange: Dispatch<SetStateAction<boolean>>;
   onAxesChange: Dispatch<SetStateAction<boolean>>;
   onBoundsChange: Dispatch<SetStateAction<boolean>>;
+  onInspectorChange: Dispatch<SetStateAction<boolean>>;
   onResetCamera: () => void;
   onScreenshot: () => void;
   resetCameraToken: number;
@@ -48,10 +51,12 @@ export function ViewerPanel({
   showGrid,
   showAxes,
   showBounds,
+  showInspector,
   onEnvironmentChange,
   onGridChange,
   onAxesChange,
   onBoundsChange,
+  onInspectorChange,
   onResetCamera,
   onScreenshot,
   resetCameraToken,
@@ -134,6 +139,15 @@ export function ViewerPanel({
         >
           Bounds
         </button>
+        <button
+          type="button"
+          className={showInspector ? "active" : ""}
+          aria-pressed={showInspector}
+          onClick={() => onInspectorChange((value) => !value)}
+          disabled={!model}
+        >
+          Inspect
+        </button>
         <label className="viewer-environment">
           <span>Light</span>
           <select
@@ -202,10 +216,56 @@ export function ViewerPanel({
         </div>
       )}
 
+      {model && showInspector && <ModelInspector model={model} />}
+
       <div className="viewport-help">
         Drag to orbit · Scroll to zoom · Right-drag to pan
       </div>
     </section>
+  );
+}
+
+function ModelInspector({ model }: { model: NonNullable<ViewerPanelProps["model"]> }) {
+  const texturedMeshes = model.meshes.filter((mesh) => mesh.texture).length;
+  const paintableMeshes = model.meshes.filter(
+    (mesh) => classifyPaintChannel(mesh) !== "none",
+  ).length;
+
+  return (
+    <aside className="model-inspector" aria-label="Model inspector">
+      <div className="model-inspector-heading">
+        <div>
+          <span className="section-label">Asset inspection</span>
+          <strong>Mesh materials</strong>
+        </div>
+        <span className="model-inspector-format">{model.format}</span>
+      </div>
+      <div className="model-inspector-summary">
+        <span>{model.meshes.length} meshes</span>
+        <span>{texturedMeshes} textured</span>
+        <span>{paintableMeshes} paintable</span>
+      </div>
+      <div className="model-inspector-list">
+        {model.meshes.map((mesh, index) => {
+          const paintChannel = classifyPaintChannel(mesh);
+          return (
+            <div className="model-inspector-row" key={`${mesh.name}-${index}`}>
+              <div className="model-inspector-row-title">
+                <strong title={mesh.name}>{mesh.name || `Mesh ${index + 1}`}</strong>
+                <span className={mesh.texture ? "has-texture" : "no-texture"}>
+                  {mesh.texture ? "TEXTURED" : "NO TEXTURE"}
+                </span>
+              </div>
+              <small title={mesh.material}>{mesh.material || "Unnamed material"}</small>
+              <small>
+                {mesh.shader || "Unknown shader"}
+                {paintChannel !== "none" && ` · ${paintChannel} paint`}
+              </small>
+            </div>
+          );
+        })}
+      </div>
+    </aside>
   );
 }
 

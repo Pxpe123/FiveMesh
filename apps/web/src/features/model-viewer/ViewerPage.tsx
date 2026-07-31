@@ -25,6 +25,7 @@ export function ViewerPage() {
   const [showGrid, setShowGrid] = useState(true);
   const [showAxes, setShowAxes] = useState(false);
   const [showBounds, setShowBounds] = useState(false);
+  const [showInspector, setShowInspector] = useState(false);
   const [resetCameraToken, setResetCameraToken] = useState(0);
   const [screenshotToken, setScreenshotToken] = useState(0);
   useEffect(() => {
@@ -97,10 +98,12 @@ export function ViewerPage() {
         showGrid={showGrid}
         showAxes={showAxes}
         showBounds={showBounds}
+        showInspector={showInspector}
         onEnvironmentChange={setEnvironment}
         onGridChange={setShowGrid}
         onAxesChange={setShowAxes}
         onBoundsChange={setShowBounds}
+        onInspectorChange={setShowInspector}
         onResetCamera={() => setResetCameraToken((value) => value + 1)}
         onScreenshot={() => setScreenshotToken((value) => value + 1)}
         resetCameraToken={resetCameraToken}
