@@ -5,8 +5,8 @@ needed for a full GTA V world viewer.
 
 ## Current foundation
 
-The `/map` tool is a browser-only coordinate finder. It keeps the coordinate
-contract explicit:
+The `/map` tool is a browser-only coordinate finder and waypoint planner. It
+keeps the coordinate contract explicit:
 
 ```text
 screen x  -> world X (west to east)
@@ -16,8 +16,40 @@ height    -> world Z (entered by the user)
 
 The map view is presentation-only. Roadmap, Satellite-style, and Terrain views
 all use the same transform, so changing the view cannot change the copied
-coordinate. The bounds should eventually come from a calibrated map manifest,
-not from a component constant.
+coordinate. The first waypoint system uses a small replaceable road graph and
+Dijkstra routing to prove the interaction. The bounds and road graph should
+eventually come from a calibrated dataset manifest, not from component data.
+
+## Driving routes
+
+The production routing graph should be extracted from GTA V `.ynd` traffic-path
+files. CodeWalker already identifies `.ynd` as the format used for traffic paths,
+so the Engine can normalize those nodes and links into a browser-friendly graph:
+<https://github.com/dexyfex/CodeWalker/blob/master/README.md>.
+
+```text
+.ynd traffic paths
+       |
+       v
+Engine graph extractor
+       |
+       +--> node position and sector
+       +--> connected node IDs
+       +--> lane/direction/path flags
+       +--> road class and routing cost
+       |
+       v
+Versioned routing graph tiles
+       |
+       v
+Browser route worker (A* / Dijkstra)
+```
+
+The browser should load graph tiles around the start and destination, calculate
+the shortest valid driving route in a Web Worker, then draw the result on both
+the 2D map and future 3D view. Routing cost can later account for road class,
+one-way links, blocked roads, and server-specific edits instead of using distance
+alone.
 
 ## Target full-world architecture
 
@@ -156,10 +188,11 @@ bridge is an opt-in mode for creators who want to inspect private resources.
 ## Practical delivery phases
 
 1. **Coordinate tools** - current 2D finder, map view selector, copy formats,
-   and a calibrated bounds manifest.
-2. **Map data importer** - extract YMAP/YTYP placements and produce a searchable
-   dataset manifest.
-3. **2D placement viewer** - draw entities, archetype names, bounds, and MLO
+   prototype waypoint routing, and a calibrated bounds manifest.
+2. **World data importer** - extract YMAP/YTYP placements and `.ynd` traffic
+   paths into searchable placement and routing manifests.
+3. **2D placement viewer** - draw entities, archetype names, driving routes,
+   bounds, and MLO
    portals over the map without loading every mesh.
 4. **Streaming 3D viewer** - load sector geometry and textures around the camera
    with LOD and cancellation.

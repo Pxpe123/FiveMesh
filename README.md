@@ -91,6 +91,7 @@ The Web app uses route-based pages:
 - `/viewer?example=<id>` opens a prepared example directly.
 - `/converter` converts YDR, YFT, and YTD assets to XML or rebuilds them from XML.
 - `/mlo` inspects YTYP MLO definitions, referenced assets, rooms, portals, and entities.
+- `/map` provides coordinate copying and waypoint routing across multiple 2D map views.
 - `/games/hack-practice` is the first interactive RP practice game.
 
 The MLO workspace can export a new YTYP after changing a portal's room links,
@@ -156,6 +157,7 @@ tunnel is live.
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Project map](docs/PROJECT_MAP.md)
+- [Map viewer architecture](docs/MAP_VIEWER_ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ## GitHub Pages preview

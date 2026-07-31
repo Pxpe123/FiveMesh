@@ -118,6 +118,46 @@
   background: #183326;
 }
 
+.map-route-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-route-controls > span {
+  flex: 1;
+  color: #7f8e99;
+  font-size: 11px;
+}
+
+.map-placement-switch {
+  display: flex;
+  gap: 4px;
+}
+
+.map-placement-switch button,
+.map-clear-route {
+  padding: 7px 10px;
+  border: 1px solid #293741;
+  border-radius: 6px;
+  color: #87949e;
+  background: #10171d;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.map-placement-switch button:hover,
+.map-placement-switch button.active {
+  border-color: #4f7963;
+  color: #baf7d7;
+  background: #183326;
+}
+
+.map-clear-route:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
 .map-scale {
   color: #667682;
   font-size: 11px;
@@ -196,6 +236,37 @@
   background: #efffd7aa;
 }
 
+.route-map-marker {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 2px solid #f4f8f6;
+  border-radius: 50% 50% 50% 3px;
+  color: #07110d;
+  font: 700 10px "Space Grotesk", sans-serif;
+  transform: translate(-50%, -75%) rotate(-45deg);
+  box-shadow: 0 5px 15px #0008;
+  pointer-events: none;
+}
+
+.route-start-marker {
+  background: #5ec8ff;
+}
+
+.route-waypoint-marker {
+  background: #9df21d;
+}
+
+.route-map-marker i {
+  color: #07110d;
+  font-style: normal;
+  line-height: 1;
+  transform: rotate(45deg);
+}
+
 .coordinate-marker i {
   top: 10px;
   right: -9px;
@@ -229,6 +300,7 @@
 
 .legend-land { background: #4b7860; }
 .legend-road { background: #b3a56d; }
+.legend-route { background: #9df21d; box-shadow: 0 0 7px #9df21d; }
 .legend-marker { background: #9df21d; box-shadow: 0 0 7px #9df21d; }
 
 .coordinate-panel {
@@ -257,6 +329,32 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 7px;
+}
+
+.route-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+
+.route-summary div {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid #31583f;
+  border-radius: 7px;
+  background: #12231a;
+}
+
+.route-summary span {
+  color: #84a091;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.route-summary strong {
+  color: #bdf88a;
+  font: 600 16px "Space Grotesk", sans-serif;
 }
 
 .coordinate-readout div {
@@ -429,6 +527,16 @@
   .map-future-note {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .map-route-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .map-placement-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
   .map-view-switch {
