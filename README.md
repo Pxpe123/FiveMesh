@@ -29,9 +29,7 @@ apps can be added inside the same shell as the project grows.
 
 The MLO workspace now reads YTYP archetypes, rooms, portals, and entities. The
 next step is rendering referenced interior YDRs and adding YMAP placement data
-so MLO and map workflows can be explored in the same environment. A broader
-standalone map viewer is also on the table if the format support and rendering
-pipeline make that practical.
+so complete MLO scenes can be explored in the same environment.
 
 The home screen also supports curated examples for visitors who do not know
 FiveM tooling or do not have model files ready. Example assets live in
@@ -91,7 +89,6 @@ The Web app uses route-based pages:
 - `/viewer?example=<id>` opens a prepared example directly.
 - `/converter` converts YDR, YFT, and YTD assets to XML or rebuilds them from XML.
 - `/mlo` inspects YTYP MLO definitions, referenced assets, rooms, portals, and entities.
-- `/map` provides coordinate copying and waypoint routing across multiple 2D map views.
 - `/games/hack-practice` is the first interactive RP practice game.
 
 The MLO workspace can export a new YTYP after changing a portal's room links,
@@ -157,8 +154,6 @@ tunnel is live.
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Project map](docs/PROJECT_MAP.md)
-- [Map viewer architecture](docs/MAP_VIEWER_ARCHITECTURE.md)
-- [Map data sources](docs/MAP_DATA_SOURCES.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ## GitHub Pages preview

@@ -29,11 +29,6 @@ const HackPracticePage = lazy(() =>
     default: module.HackPracticePage,
   })),
 );
-const MapPage = lazy(() =>
-  import("../features/map/MapPage").then((module) => ({
-    default: module.MapPage,
-  })),
-);
 
 export function AppRoutes() {
   return (
@@ -46,7 +41,6 @@ export function AppRoutes() {
           <Route path="/viewer" element={<ViewerPage />} />
           <Route path="/converter" element={<ConverterPage />} />
           <Route path="/mlo" element={<MloPage />} />
-          <Route path="/map" element={<MapPage />} />
           <Route path="/games/hack-practice" element={<HackPracticePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

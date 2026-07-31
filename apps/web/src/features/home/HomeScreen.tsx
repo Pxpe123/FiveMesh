@@ -17,7 +17,7 @@ export function HomeScreen() {
           FiveMesh decodes RAGE model files through a dedicated Engine, serves
           the result through a small API, and renders the preview in WebGL. The
           model viewer and MLO workspace are the first tools, with room for
-          map, editing, and batch workflows later.
+          editing and batch workflows later.
         </p>
         <Link className="primary-action" to="/games/hack-practice">
           Practice Hacks
@@ -107,8 +107,8 @@ export function HomeScreen() {
             <strong>Viewer expansion</strong>
             <p className="muted-text">
               The next step is broadening the viewer beyond drawables and
-              vehicle fragments so map and MLO workflows can live in the same
-              toolset.
+              vehicle fragments so model and MLO workflows can live in the
+              same toolset.
             </p>
           </div>
 

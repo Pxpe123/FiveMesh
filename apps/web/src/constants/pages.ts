@@ -1,4 +1,4 @@
-export type AppPage = "viewer" | "converter" | "mlo" | "map" | "hack-practice";
+export type AppPage = "viewer" | "converter" | "mlo" | "hack-practice";
 
 export type FiveMeshApp = {
   id: AppPage;
@@ -40,14 +40,6 @@ export const fiveMeshApps: FiveMeshApp[] = [
       "Inspect YTYP archetypes, rooms, portals, and entities, then export portal edits.",
   },
   {
-    id: "map",
-    path: "/map",
-    name: "Map & Coordinates",
-    status: "available",
-    description:
-      "Click the Los Santos map to copy FiveM-ready X, Y, and Z coordinates.",
-  },
-  {
     id: "hack-practice",
     path: "/games/hack-practice",
     name: "Practice Hacks",
@@ -69,12 +61,6 @@ export const plannedFeatures: PlannedFeature[] = [
     stage: "next",
     description:
       "Render referenced YDR interiors and portal visibility in a navigable 3D scene.",
-  },
-  {
-    name: "Map Viewer",
-    stage: "possible future app",
-    description:
-      "A full map viewer is on the table if the data pipeline and performance hold up well enough.",
   },
 ];
 
