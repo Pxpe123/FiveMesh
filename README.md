@@ -158,6 +158,7 @@ tunnel is live.
 - [Architecture](docs/ARCHITECTURE.md)
 - [Project map](docs/PROJECT_MAP.md)
 - [Map viewer architecture](docs/MAP_VIEWER_ARCHITECTURE.md)
+- [Map data sources](docs/MAP_DATA_SOURCES.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ## GitHub Pages preview

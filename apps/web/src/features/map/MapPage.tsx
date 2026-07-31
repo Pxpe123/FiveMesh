@@ -2,16 +2,23 @@ import { useMemo, useRef, useState } from "react";
 
 import {
   findDrivingRoute,
-  roadSegments,
   WORLD_BOUNDS,
   worldToMapPoint,
   type DrivingRoute,
   type WorldCoordinate,
 } from "./mapRouting";
+import {
+  importantMapLocations,
+  mapLocationCategories,
+  type MapLocation,
+} from "./mapLocations";
 
 type Coordinate = WorldCoordinate;
-type MapType = "roadmap" | "satellite" | "terrain";
+type MapType = "roadmap" | "satellite" | "atlas";
 type PlacementMode = "start" | "waypoint";
+
+const MAP_VIEW_WIDTH = 1000;
+const MAP_VIEW_HEIGHT = 1300;
 
 export function MapPage() {
   const [coordinate, setCoordinate] = useState<Coordinate | null>(null);
@@ -21,6 +28,7 @@ export function MapPage() {
   const [placementMode, setPlacementMode] = useState<PlacementMode>("start");
   const [routeStart, setRouteStart] = useState<Coordinate | null>(null);
   const [waypoint, setWaypoint] = useState<Coordinate | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState("");
 
   const selectedCoordinate = useMemo(() => {
     if (!coordinate) return null;
@@ -32,16 +40,30 @@ export function MapPage() {
     () => routeStart && waypoint ? findDrivingRoute(routeStart, waypoint) : null,
     [routeStart, waypoint],
   );
+  const selectedLocation = useMemo(
+    () => importantMapLocations.find((item) => item.id === selectedLocationId) ?? null,
+    [selectedLocationId],
+  );
 
   function selectCoordinate(nextCoordinate: Coordinate) {
+    setSelectedLocationId("");
     setCoordinate(nextCoordinate);
     if (placementMode === "start") {
       setRouteStart(nextCoordinate);
-      setWaypoint(null);
       setPlacementMode("waypoint");
       return;
     }
     setWaypoint(nextCoordinate);
+  }
+
+  function selectImportantLocation(id: string) {
+    setSelectedLocationId(id);
+    const location = importantMapLocations.find((item) => item.id === id);
+    if (!location) return;
+    setCoordinate(location);
+    setHeight(location.z.toFixed(1));
+    setWaypoint(location);
+    setPlacementMode(routeStart ? "waypoint" : "start");
   }
 
   function clearRoute() {
@@ -49,6 +71,7 @@ export function MapPage() {
     setRouteStart(null);
     setWaypoint(null);
     setPlacementMode("start");
+    setSelectedLocationId("");
   }
 
   async function copyCoordinate(value: string, label: string) {
@@ -87,7 +110,7 @@ export function MapPage() {
               <strong>{placementMode === "start" ? "Click to set your starting point" : "Click to set your waypoint"}</strong>
             </div>
             <div className="map-view-switch" role="radiogroup" aria-label="Map view">
-              {(["roadmap", "satellite", "terrain"] as MapType[]).map((view) => (
+              {(["roadmap", "satellite", "atlas"] as MapType[]).map((view) => (
                 <button
                   key={view}
                   type="button"
@@ -129,6 +152,21 @@ export function MapPage() {
               Clear route
             </button>
           </div>
+          <label className="map-location-picker">
+            <span>Important blip</span>
+            <select value={selectedLocationId} onChange={(event) => selectImportantLocation(event.target.value)}>
+              <option value="">Choose a location…</option>
+              {mapLocationCategories.map((category) => (
+                <optgroup key={category} label={category}>
+                  {importantMapLocations
+                    .filter((location) => location.category === category)
+                    .map((location) => (
+                      <option key={location.id} value={location.id}>{location.name}</option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
           <CoordinateMap
             coordinate={selectedCoordinate}
             routeStart={routeStart}
@@ -136,20 +174,25 @@ export function MapPage() {
             route={drivingRoute}
             mapType={mapType}
             placementMode={placementMode}
+            locations={importantMapLocations}
+            selectedLocationId={selectedLocationId}
             onSelect={selectCoordinate}
           />
           <div className="map-legend" aria-label="Map legend">
             <span><i className="legend-land" />Landmass</span>
             <span><i className="legend-road" />Major roads</span>
             <span><i className="legend-route" />Driving route</span>
-            <span><i className="legend-marker" />Waypoint</span>
+            <span><i className="legend-marker" />Important locations</span>
           </div>
+          <a className="map-attribution" href="https://github.com/CreepPork/GTAV-Maps" target="_blank" rel="noreferrer">
+            Map artwork: GTAV-Maps · MIT License
+          </a>
         </div>
 
         <aside className="coordinate-panel" aria-live="polite">
           <div className="coordinate-panel-heading">
-            <span className="section-label">Selected point</span>
-            <strong>{selectedCoordinate ? "Ready to use" : "No point selected"}</strong>
+            <span className="section-label">{selectedLocation?.category ?? "Selected point"}</span>
+            <strong>{selectedLocation?.name ?? (selectedCoordinate ? "Ready to use" : "No point selected")}</strong>
           </div>
 
           {selectedCoordinate ? (
@@ -237,6 +280,8 @@ function CoordinateMap({
   route,
   mapType,
   placementMode,
+  locations,
+  selectedLocationId,
   onSelect,
 }: {
   coordinate: Coordinate | null;
@@ -245,6 +290,8 @@ function CoordinateMap({
   route: DrivingRoute | null;
   mapType: MapType;
   placementMode: PlacementMode;
+  locations: MapLocation[];
+  selectedLocationId: string;
   onSelect: (coordinate: Coordinate) => void;
 }) {
   const mapRef = useRef<HTMLButtonElement>(null);
@@ -277,53 +324,17 @@ function CoordinateMap({
       }}
       aria-label={`Los Santos map. Click to set the ${placementMode === "start" ? "starting point" : "waypoint"}.`}
     >
-      <svg className="coordinate-map-art" viewBox="0 0 1000 650" aria-hidden="true">
-        <defs>
-          <pattern id="map-grid" width="80" height="80" patternUnits="userSpaceOnUse">
-            <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#27404b" strokeWidth="1" opacity=".45" />
-          </pattern>
-          <linearGradient id="land-gradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor={mapType === "satellite" ? "#4e513a" : mapType === "terrain" ? "#4a4631" : "#263c31"} />
-            <stop offset="1" stopColor={mapType === "satellite" ? "#252d24" : mapType === "terrain" ? "#27291d" : "#15271f"} />
-          </linearGradient>
-        </defs>
-        <rect width="1000" height="650" fill={mapType === "satellite" ? "#151d1b" : mapType === "terrain" ? "#171b16" : "#0b1720"} />
-        <rect width="1000" height="650" fill="url(#map-grid)" />
-        <path
-          d="M127 78 236 43 365 63 438 35 567 58 688 33 814 83 865 155 835 217 886 291 849 364 873 452 819 508 755 526 713 587 622 572 566 615 473 589 391 608 318 567 225 584 171 526 102 489 133 408 84 342 125 273 97 199Z"
-          fill="url(#land-gradient)"
-          stroke="#4b7860"
-          strokeWidth="3"
-        />
-        <path d="M127 78 236 43 365 63 438 35 567 58 688 33 814 83 865 155 835 217 886 291 849 364 873 452 819 508 755 526 713 587 622 572 566 615 473 589 391 608 318 567 225 584 171 526 102 489 133 408 84 342 125 273 97 199Z" fill="url(#map-grid)" opacity=".65" />
-        <g fill="none" stroke="#101713" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" opacity=".85">
-          {roadSegments.map((segment, index) => (
-            <line key={`road-shadow-${index}`} x1={segment.from.x * 1000} y1={segment.from.y * 650} x2={segment.to.x * 1000} y2={segment.to.y * 650} />
-          ))}
-        </g>
-        <g fill="none" stroke={mapType === "satellite" ? "#e0c98a" : mapType === "terrain" ? "#b6a368" : "#b3a56d"} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".9">
-          {roadSegments.map((segment, index) => (
-            <line key={`road-${index}`} x1={segment.from.x * 1000} y1={segment.from.y * 650} x2={segment.to.x * 1000} y2={segment.to.y * 650} />
-          ))}
-        </g>
-        <path d="M98 511 C214 483 276 519 357 550" fill="none" stroke="#4c7888" strokeWidth="13" opacity=".8" />
-        <path d="M92 520 C212 493 277 527 352 560" fill="none" stroke="#0b1720" strokeWidth="7" />
-        {mapType !== "roadmap" && (
-          <g fill="none" stroke={mapType === "satellite" ? "#a2a46d" : "#81764a"} strokeWidth="2" opacity=".42">
-            <path d="M160 130 C255 110 324 128 390 105 S562 102 648 128" />
-            <path d="M144 162 C245 142 331 161 408 139 S573 133 672 162" />
-            <path d="M704 222 C765 210 815 229 846 253" />
-            <path d="M685 251 C757 241 817 259 858 287" />
-            <path d="M204 470 C278 452 332 468 388 492" />
-          </g>
-        )}
+      <svg className="coordinate-map-art" viewBox={`0 0 ${MAP_VIEW_WIDTH} ${MAP_VIEW_HEIGHT}`} aria-hidden="true">
+        <rect width={MAP_VIEW_WIDTH} height={MAP_VIEW_HEIGHT} fill="#07131c" />
+        <image href={mapTileUrl(mapType, 0)} x="0" y="0" width={MAP_VIEW_WIDTH} height={MAP_VIEW_WIDTH} preserveAspectRatio="none" />
+        <image href={mapTileUrl(mapType, 1)} x="0" y={MAP_VIEW_WIDTH} width={MAP_VIEW_WIDTH} height={MAP_VIEW_WIDTH} preserveAspectRatio="none" />
         {route && (
           <>
             <polyline
               points={toSvgPoints(route.points)}
               fill="none"
               stroke="#11210b"
-              strokeWidth="13"
+              strokeWidth="22"
               strokeLinecap="round"
               strokeLinejoin="round"
               opacity=".9"
@@ -332,27 +343,12 @@ function CoordinateMap({
               points={toSvgPoints(route.points)}
               fill="none"
               stroke="#9df21d"
-              strokeWidth="6"
+              strokeWidth="10"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </>
         )}
-        <g fill="#9dbdaf" fontFamily="Arial, sans-serif" fontSize="17" letterSpacing="2">
-          <text x="416" y="142">VINEWOOD</text>
-          <text x="281" y="315">LOS SANTOS</text>
-          <text x="603" y="294">EAST LOS SANTOS</text>
-          <text x="623" y="475">LOS SANTOS AIRPORT</text>
-          <text x="282" y="520">VESPUCCI</text>
-          <text x="734" y="145">BLAINE COUNTY</text>
-          <text x="118" y="610" fill="#6e9baa">PACIFIC OCEAN</text>
-        </g>
-        <g fill="#d2c485" opacity=".9">
-          <circle cx="430" cy="284" r="7" />
-          <circle cx="578" cy="318" r="7" />
-          <circle cx="672" cy="405" r="7" />
-          <circle cx="337" cy="426" r="7" />
-        </g>
       </svg>
       <span className="map-north-indicator">N</span>
       {coordinate && !routeStart && !waypoint && (
@@ -377,6 +373,15 @@ function CoordinateMap({
           <i>W</i>
         </span>
       )}
+      {locations.map((location) => (
+        <span
+          key={location.id}
+          className={`map-blip map-blip-${location.category.toLowerCase()}${selectedLocationId === location.id ? " selected" : ""}`}
+          style={markerPosition(location)}
+          title={`${location.name} (${location.category})`}
+          aria-hidden="true"
+        />
+      ))}
     </button>
   );
 }
@@ -410,7 +415,14 @@ function formatDuration(seconds: number) {
 }
 
 function toSvgPoints(points: DrivingRoute["points"]) {
-  return points.map((point) => `${point.x * 1000},${point.y * 650}`).join(" ");
+  return points
+    .map((point) => `${point.x * MAP_VIEW_WIDTH},${point.y * MAP_VIEW_HEIGHT}`)
+    .join(" ");
+}
+
+function mapTileUrl(mapType: MapType, row: 0 | 1) {
+  const layer = mapType === "roadmap" ? "road" : mapType;
+  return `${import.meta.env.BASE_URL}maps/${layer}/2-0_${row}.png`;
 }
 
 function markerPosition(coordinate: Coordinate) {
