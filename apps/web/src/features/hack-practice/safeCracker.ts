@@ -1,6 +1,7 @@
 export const SAFE_CRACKER_GAP_COUNT = 12;
 export const SAFE_CRACKER_ROTATION_MS = 3500;
-export const SAFE_CRACKER_HIT_TOLERANCE = 5;
+// Slightly exceeds the visible gap so edge clicks match the in-game leniency.
+export const SAFE_CRACKER_HIT_TOLERANCE = 7.5;
 
 const GAP_STEP = 360 / SAFE_CRACKER_GAP_COUNT;
 
