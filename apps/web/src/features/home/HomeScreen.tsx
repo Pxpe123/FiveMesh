@@ -32,8 +32,8 @@ export function HomeScreen() {
           <p className="section-label">FiveM RP practice games</p>
           <h2 id="practice-heading">Practice Hacks</h2>
           <p>
-            Rehearse the ATM pipe-connection hack in your browser before using
-            it in an RP server.
+            Rehearse ATM wiring, store-register lockpicking, and safe-cracking
+            challenges in your browser before using them in an RP server.
           </p>
         </div>
         <Link className="featured-practice-action" to="/games/hack-practice">

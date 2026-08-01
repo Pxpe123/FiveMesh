@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { StoreCashRegisterPractice } from "./StoreCashRegisterPractice";
+import { SafeCrackerPractice } from "./SafeCrackerPractice";
+import { HackGameMenu } from "./HackGameMenu";
 import {
   createHackRound,
   getConnectedTiles,
@@ -83,6 +85,9 @@ export function HackPracticePage() {
   if (selectedGameId === "store-cash") {
     return <StoreCashRegisterPractice onSelectGame={selectGame} />;
   }
+  if (selectedGameId === "safe-cracker") {
+    return <SafeCrackerPractice onSelectGame={selectGame} />;
+  }
 
   function handleTileClick(index: number) {
     if (status !== "playing" || !round || showSolution) return;
@@ -155,22 +160,7 @@ export function HackPracticePage() {
             <span>Hack games</span>
             <small>LOCAL SESSION</small>
           </div>
-          <div className="hack-game-list" role="radiogroup" aria-label="Hack games">
-            {hackGames.map((game) => (
-              <button
-                key={game.id}
-                type="button"
-                role="radio"
-                aria-checked={selectedGameId === game.id}
-                className={`${selectedGameId === game.id ? "active" : ""}${game.status === "coming-soon" ? " coming-soon" : ""}`}
-                onClick={() => selectGame(game.id)}
-              >
-                <strong>{game.name}</strong>
-                <small>{game.description}</small>
-                {game.status === "coming-soon" && <em>COMING SOON</em>}
-              </button>
-            ))}
-          </div>
+          <HackGameMenu selectedGameId={selectedGameId} onSelectGame={selectGame} />
           <div className="hack-stat-grid">
             <Stat label="Best moves" value={bestMoves === null ? "—" : bestMoves.toString()} />
             <Stat label="Current streak" value={streak.toString()} />

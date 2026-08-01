@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { hackGames, type HackGameId } from "./hackGame";
+import { HackGameMenu } from "./HackGameMenu";
 
 type StoreStatus = "ready" | "playing" | "success" | "failed";
 
@@ -106,22 +107,7 @@ export function StoreCashRegisterPractice({
       <section className="hack-layout">
         <aside className="hack-sidebar">
           <div className="hack-panel-heading"><span>Hack games</span><small>LOCAL SESSION</small></div>
-          <div className="hack-game-list" role="radiogroup" aria-label="Hack games">
-            {hackGames.map((game) => (
-              <button
-                key={game.id}
-                type="button"
-                role="radio"
-                aria-checked={game.id === "store-cash"}
-                className={`${game.id === "store-cash" ? "active" : ""}${game.status === "coming-soon" ? " coming-soon" : ""}`}
-                onClick={() => onSelectGame(game.id)}
-              >
-                <strong>{game.name}</strong>
-                <small>{game.description}</small>
-                {game.status === "coming-soon" && <em>COMING SOON</em>}
-              </button>
-            ))}
-          </div>
+          <HackGameMenu selectedGameId="store-cash" onSelectGame={onSelectGame} />
           <div className="hack-stat-grid">
             <Stat label="Cycles" value={`${cycle} / ${CYCLES}`} />
             <Stat label="Time" value="No limit" />

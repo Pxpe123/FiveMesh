@@ -57,10 +57,13 @@ flowchart LR
 ```mermaid
 flowchart LR
     Home["Home / Games navigation"] --> Hack["/games/hack-practice"]
-    Hack --> Difficulty["Difficulty and local session state"]
-    Difficulty --> Board["Randomised signal board"]
-    Board --> Input["Mouse or number-key input"]
-    Input --> Result["Timer, score, streak, and mistakes"]
+    Hack --> Menu["Game selection"]
+    Menu --> ATM["ATM Bomb pipe board"]
+    Menu --> Store["Store Cash Register dial"]
+    Menu --> Safe["Safe Cracker timing dial"]
+    ATM --> Result["Local result and replay"]
+    Store --> Result
+    Safe --> Result
 ```
 
 Games are browser-only practice tools. Each game owns its rules and state in a

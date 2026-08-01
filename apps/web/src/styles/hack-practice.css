@@ -77,6 +77,27 @@
 .store-dial-core span { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #aaa7ff, #6561d8); box-shadow: 0 0 18px #817eff99; transform-origin: center; transition: transform .08s linear; }
 .store-cycle-label { color: #b8b6ff; font: 600 12px "Space Grotesk", sans-serif; letter-spacing: .12em; text-transform: uppercase; }
 
+.safe-cracker-board-panel { background: radial-gradient(circle at 50% 35%, #3b4038, #171c1b 54%, #10161d 100%); }
+.safe-cracker-game-window { min-height: 560px; }
+.safe-cracker-stage { display: grid; justify-items: center; gap: 16px; padding: 24px 0 12px; }
+.safe-cracker-dial { width: min(420px, 72vw); aspect-ratio: 1; padding: 0; border: 1px solid #444a45; border-radius: 50%; color: inherit; background: radial-gradient(circle, #262b29 0 18%, #111614 19% 39%, #242925 40% 41%, #101411 42% 61%, #313630 62% 63%, #151a17 64% 100%); box-shadow: inset 0 0 42px #000c, inset 0 0 0 8px #171b18, 0 22px 70px #000a; cursor: crosshair; }
+.safe-cracker-dial:disabled { opacity: 1; cursor: default; }
+.safe-cracker-dial:focus-visible { outline: 2px solid #9df21d; outline-offset: 5px; }
+.safe-cracker-dial svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.safe-dial-rim { fill: none; stroke: #626963; stroke-width: 5; }
+.safe-dial-inner { fill: none; stroke: #353b37; stroke-width: 2; }
+.safe-dial-segment { fill: none; stroke: #c7cac7; stroke-width: 10; stroke-linecap: round; filter: drop-shadow(0 2px 1px #0008); }
+.safe-lock-tick, .safe-moving-pin { stroke: #9df21d; stroke-width: 7; stroke-linecap: round; filter: drop-shadow(0 0 5px #9df21d); }
+.safe-moving-pin { stroke-width: 8; }
+.safe-cracker-dial.failed .safe-moving-pin { stroke: #ff646f; filter: drop-shadow(0 0 6px #ff646f); }
+.safe-cracker-dial.success .safe-dial-segment { stroke: #9df21d; filter: drop-shadow(0 0 5px #9df21d); }
+.safe-dial-hub { fill: #202522; stroke: #6b726c; stroke-width: 5; filter: drop-shadow(0 8px 8px #0008); }
+.safe-dial-hub-ring { fill: #111512; stroke: #3f4641; stroke-width: 6; }
+.safe-dial-hub-centre { fill: #282e2a; stroke: #777e78; stroke-width: 3; }
+.safe-cracker-progress { color: #aab3ac; font: 600 12px "Space Grotesk", sans-serif; letter-spacing: .14em; }
+.safe-cracker-dial.success + .safe-cracker-progress { color: #9df21d; }
+.safe-cracker-dial.failed + .safe-cracker-progress { color: #ff8d96; }
+
 @media (max-width: 820px) {
   .hack-intro { align-items: start; flex-direction: column; }
   .hack-status-card { width: 100%; }
@@ -92,4 +113,5 @@
   .hack-game-title { font-size: 26px; }
   .hack-window-state { display: none; }
   .hack-pipe-tile svg { width: 82%; height: 82%; }
+  .safe-cracker-dial { width: min(340px, 82vw); }
 }

@@ -14,7 +14,7 @@ FiveMesh is built for fast visual inspection of GTA V model assets:
 - decode YDR/YFT model files through a dedicated .NET Engine
 - resolve embedded or uploaded YTD texture dictionaries
 - inspect YTYP archetypes, MLO rooms, portals, and placed entities
-- provide practice games for FiveM RP skills, starting with ATM Bomb Hack Practice
+- provide browser-only practice games for ATM wiring, register locks, and safe cracking
 - serve a neutral preview format through an Express API
 - render textured geometry in a browser-based Three.js viewer
 - provide professional inspection tools such as lighting presets, grid/axis
@@ -89,7 +89,7 @@ The Web app uses route-based pages:
 - `/viewer?example=<id>` opens a prepared example directly.
 - `/converter` converts YDR, YFT, and YTD assets to XML or rebuilds them from XML.
 - `/mlo` inspects YTYP MLO definitions, referenced assets, rooms, portals, and entities.
-- `/games/hack-practice` is the first interactive RP practice game.
+- `/games/hack-practice` contains the browser-only RP practice game collection.
 
 The MLO workspace can export a new YTYP after changing a portal's room links,
 flags, opacity, or four portal corners. The original file is never overwritten.
@@ -164,8 +164,8 @@ repository-safe base path and HashRouter. In the repository settings, set
 Pages to **GitHub Actions**, then push to `main` or `master`.
 
 Asset decoding, uploads, examples, conversion, and MLO inspection show an
-offline notice when the API is unavailable. The ATM Bomb Hack Practice game
-continues to work entirely in the browser and is available from that notice.
+offline notice when the API is unavailable. The practice games continue to
+work entirely in the browser and remain available from that notice.
 
 ## Access
 

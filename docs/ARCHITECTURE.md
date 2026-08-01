@@ -102,7 +102,7 @@ FiveMesh/
 |       |   |-- examples/       hosted example catalogue
 |       |   |-- model-upload/   upload selection and request state
 |       |   |-- model-viewer/   viewer page, controls, and Three.js runtime
-|       |   |-- hack-practice/ first playable RP practice game
+|       |   |-- hack-practice/ browser-only RP practice games
 |       |   `-- conversion/     XML/binary converter page
 |       |-- components/         shared navigation and UI
 |       |-- styles/             feature-level CSS
